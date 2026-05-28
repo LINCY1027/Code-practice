@@ -1,0 +1,2819 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI://GLOSSARY.SYS v3 — 互動版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05060a;--bg-2:#0a0d14;--panel:#0d1119;
+  --cyan:#00f0ff;--yellow:#fcee0a;--magenta:#ff003c;--green:#39ff14;
+  --grid:rgba(0,240,255,0.08);--text:#d8e4f0;--mute:#5a6678;--warn:#ff7b00;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Rajdhani','Noto Sans TC',sans-serif;
+  font-weight:400;line-height:1.55;overflow-x:hidden;
+  position:relative;min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:60px 60px;pointer-events:none;z-index:1;
+  animation:gridShift 60s linear infinite;
+}
+@keyframes gridShift{from{background-position:0 0,0 0}to{background-position:60px 60px,60px 60px}}
+body::after{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,
+    rgba(0,0,0,0.12) 3px,rgba(0,0,0,0) 4px);
+  pointer-events:none;z-index:2;mix-blend-mode:multiply;
+}
+
+/* ===== SCROLL PROGRESS BAR ===== */
+.scroll-progress{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,var(--cyan),var(--yellow),var(--magenta));
+  z-index:9999;transition:width 0.1s ease;
+  box-shadow:0 0 10px var(--cyan);
+}
+
+/* ===== STICKY NAV ===== */
+.sticky-nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(5,6,10,0.92);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--cyan);
+  padding:0.8rem 5vw;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'Share Tech Mono',monospace;font-size:0.72rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+}
+.sticky-nav .brand{color:var(--cyan);font-weight:700}
+.sticky-nav .links{display:flex;gap:1rem;flex-wrap:wrap}
+.sticky-nav .links a{
+  color:var(--mute);text-decoration:none;
+  padding:0.3rem 0.6rem;border:1px solid transparent;
+  transition:all 0.2s;
+}
+.sticky-nav .links a:hover{color:var(--yellow);border-color:var(--yellow)}
+.sticky-nav .links a.active{color:var(--cyan);border-color:var(--cyan);background:rgba(0,240,255,0.08)}
+
+/* ===== HERO ===== */
+.hero{
+  position:relative;z-index:3;
+  min-height:90vh;padding:4vh 5vw 0;
+  display:flex;flex-direction:column;justify-content:space-between;
+  border-bottom:1px solid var(--cyan);
+}
+.hero-top{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:2rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.72rem;
+  letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;
+}
+.hero-top .center{
+  text-align:center;color:var(--yellow);border:1px solid var(--yellow);
+  padding:0.3rem 1rem;background:rgba(252,238,10,0.05);
+}
+.hero-top .right{text-align:right;color:var(--magenta)}
+.hero-top .blink::after{content:'_';animation:blink 1s steps(2) infinite}
+@keyframes blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+
+.hero-main{margin:4rem 0;position:relative}
+.hero-tag{
+  font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  letter-spacing:0.3em;color:var(--cyan);margin-bottom:1.5rem;
+  text-transform:uppercase;display:inline-block;padding:0.3rem 0.8rem;
+  border-left:3px solid var(--cyan);background:rgba(0,240,255,0.05);
+}
+.hero h1{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(2.8rem,10vw,9rem);line-height:0.9;
+  letter-spacing:-0.02em;text-transform:uppercase;color:var(--text);
+}
+.hero h1 .glitch{
+  color:var(--magenta);
+  text-shadow:2px 0 var(--cyan),-2px 0 var(--yellow);
+  animation:glitch 4s infinite;
+}
+@keyframes glitch{
+  0%,90%,100%{text-shadow:2px 0 var(--cyan),-2px 0 var(--yellow)}
+  92%{text-shadow:-3px 0 var(--cyan),3px 0 var(--yellow);transform:translate(1px,0)}
+  94%{text-shadow:3px 0 var(--magenta),-3px 0 var(--cyan);transform:translate(-1px,0)}
+  96%{text-shadow:0 0 var(--magenta);transform:translate(0,1px)}
+}
+.hero h1 .ja{
+  display:block;font-family:'Noto Sans TC',sans-serif;font-size:0.18em;
+  color:var(--yellow);font-weight:700;letter-spacing:0.4em;margin-top:0.5em;
+}
+.hero h1 .v3{
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.15em;color:var(--green);letter-spacing:0.3em;
+  display:block;margin-top:0.3em;
+}
+.hero-meta{
+  margin-top:2rem;display:grid;grid-template-columns:2fr 1fr;
+  gap:3rem;align-items:end;
+}
+.hero-meta p{
+  font-family:'Noto Sans TC',sans-serif;font-size:1.05rem;
+  max-width:60ch;color:var(--text);line-height:1.7;
+}
+.hero-meta p .hl{color:var(--cyan);font-weight:700}
+.hero-meta p .hl-y{color:var(--yellow);font-weight:700}
+.hero-meta p .hl-g{color:var(--green);font-weight:700}
+
+.hero-stats{
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+  color:var(--mute);text-align:right;
+  border-left:1px solid var(--cyan);padding-left:1.5rem;
+}
+.hero-stats div{margin-bottom:0.4rem}
+.hero-stats .val{color:var(--green)}
+
+.hero-cta{
+  margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;
+}
+.hero-cta button{
+  font-family:'Orbitron',sans-serif;font-weight:700;
+  background:var(--bg);color:var(--cyan);
+  border:2px solid var(--cyan);padding:0.8rem 1.5rem;
+  font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;
+  cursor:pointer;transition:all 0.2s;
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
+}
+.hero-cta button:hover{
+  background:var(--cyan);color:var(--bg);
+  box-shadow:0 0 20px var(--cyan);
+}
+.hero-cta button.alt{color:var(--yellow);border-color:var(--yellow)}
+.hero-cta button.alt:hover{background:var(--yellow);color:var(--bg);box-shadow:0 0 20px var(--yellow)}
+
+.hero-bottom{
+  padding:1.5rem 0;border-top:1px solid rgba(0,240,255,0.3);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:var(--mute);letter-spacing:0.15em;text-transform:uppercase;
+}
+.hero-bottom div::before{content:'> ';color:var(--cyan)}
+
+.bracket{position:absolute;width:30px;height:30px;border:2px solid var(--cyan)}
+.bracket.tl{top:1rem;left:1rem;border-right:none;border-bottom:none}
+.bracket.tr{top:1rem;right:1rem;border-left:none;border-bottom:none}
+.bracket.bl{bottom:1rem;left:1rem;border-right:none;border-top:none}
+.bracket.br{bottom:1rem;right:1rem;border-left:none;border-top:none}
+
+/* ===== SECTION ===== */
+.section{
+  position:relative;z-index:3;padding:5rem 5vw;
+  border-bottom:1px solid rgba(0,240,255,0.2);
+}
+.section-head{
+  max-width:1500px;margin:0 auto 3rem;
+  display:grid;grid-template-columns:auto 1fr auto;gap:2rem;
+  align-items:center;border-bottom:1px solid var(--cyan);padding-bottom:1.5rem;
+}
+.section-num{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:4.5rem;line-height:1;
+  -webkit-text-stroke:1px var(--magenta);
+  background:linear-gradient(180deg,var(--magenta) 0%,transparent 80%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.section-head .titles h2{
+  font-family:'Orbitron',sans-serif;font-weight:700;
+  font-size:clamp(1.5rem,3vw,2.5rem);letter-spacing:0.02em;
+  text-transform:uppercase;line-height:1.1;
+}
+.section-head .titles h2 .ny{color:var(--yellow)}
+.section-head .titles .sub{
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+  letter-spacing:0.25em;color:var(--cyan);text-transform:uppercase;
+  margin-top:0.3rem;
+}
+.section-head .id{
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:var(--mute);text-align:right;letter-spacing:0.1em;line-height:1.4;
+}
+.section-head .id .live{color:var(--green)}
+.section-head .id .live::before{
+  content:'●';margin-right:0.3rem;
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ===== SEARCH & FILTER BAR ===== */
+.filter-bar{
+  max-width:1500px;margin:0 auto 2rem;
+  display:flex;gap:1rem;flex-wrap:wrap;align-items:center;
+  padding:1rem 1.5rem;
+  background:var(--panel);border:1px solid rgba(0,240,255,0.3);
+}
+.search-input{
+  flex:1;min-width:200px;
+  background:var(--bg);border:1px solid var(--cyan);
+  color:var(--text);padding:0.6rem 0.8rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  letter-spacing:0.05em;outline:none;
+}
+.search-input::placeholder{color:var(--mute)}
+.search-input:focus{
+  border-color:var(--yellow);
+  box-shadow:0 0 10px rgba(252,238,10,0.3);
+}
+.filter-btn{
+  background:transparent;color:var(--mute);
+  border:1px solid var(--mute);
+  font-family:'Share Tech Mono',monospace;font-size:0.72rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.5rem 0.9rem;cursor:pointer;transition:all 0.2s;
+}
+.filter-btn:hover{color:var(--cyan);border-color:var(--cyan)}
+.filter-btn.active{
+  background:var(--cyan);color:var(--bg);border-color:var(--cyan);
+  font-weight:700;
+}
+.filter-counter{
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:var(--yellow);letter-spacing:0.1em;
+  margin-left:auto;
+}
+
+/* ===== TERM CARDS ===== */
+.terms{
+  max-width:1500px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1.2rem;
+}
+.term{
+  position:relative;
+  background:linear-gradient(135deg,var(--panel) 0%,var(--bg-2) 100%);
+  border:1px solid rgba(0,240,255,0.3);padding:1.5rem;
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+  transition:all 0.25s ease;
+  display:flex;flex-direction:column;
+}
+.term::before{
+  content:'';position:absolute;top:0;left:0;
+  width:4px;height:100%;background:var(--cyan);transition:background 0.25s ease;
+}
+.term:hover{
+  border-color:var(--yellow);transform:translate(-2px,-2px);
+  box-shadow:4px 4px 0 var(--magenta),0 0 20px rgba(0,240,255,0.3);
+}
+.term:hover::before{background:var(--yellow)}
+.term.hidden{display:none}
+.term.learned::after{
+  content:'✓ LEARNED';position:absolute;top:0.5rem;right:0.5rem;
+  background:var(--green);color:var(--bg);
+  font-family:'Share Tech Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.1em;padding:0.15rem 0.4rem;font-weight:700;
+}
+.term-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:1rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+}
+.term-id{color:var(--mute)}
+.term-tag{
+  color:var(--bg);background:var(--cyan);
+  padding:0.15rem 0.5rem;font-weight:700;
+}
+.term-tag.warn{background:var(--warn)}
+.term-tag.danger{background:var(--magenta);color:white}
+.term-tag.info{background:var(--yellow)}
+.term-tag.ok{background:var(--green)}
+
+/* ===== DEMO AREA (Interactive!) ===== */
+.term-demo{
+  width:100%;min-height:90px;margin-bottom:1rem;
+  background:var(--bg);border:1px solid rgba(0,240,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  padding:1rem;
+}
+.term-demo::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(0,240,255,0.05),transparent);
+  animation:scan 3s linear infinite;pointer-events:none;
+}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+.demo-trigger{
+  background:var(--cyan);color:var(--bg);border:none;
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+  letter-spacing:0.15em;text-transform:uppercase;font-weight:700;
+  padding:0.5rem 1rem;cursor:pointer;position:relative;z-index:3;
+  transition:all 0.15s;
+}
+.demo-trigger:hover{background:var(--yellow);transform:scale(1.05)}
+.demo-trigger:active{transform:scale(0.95)}
+.demo-trigger.danger{background:var(--magenta);color:#fff}
+.demo-trigger.danger:hover{background:#ff5577}
+
+.demo-label{
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:var(--mute);letter-spacing:0.1em;text-transform:uppercase;
+  position:relative;z-index:3;text-align:center;
+}
+.demo-label .arrow{color:var(--yellow);margin:0 0.3rem}
+
+.term-zh{
+  font-family:'Orbitron','Noto Sans TC',sans-serif;font-weight:700;
+  font-size:1.35rem;line-height:1.15;color:var(--text);letter-spacing:0.01em;
+}
+.term-en{
+  font-family:'Share Tech Mono',monospace;font-size:0.9rem;
+  color:var(--cyan);margin:0.3rem 0 0.9rem;
+  letter-spacing:0.1em;text-transform:uppercase;
+}
+.term-def{
+  font-family:'Noto Sans TC',sans-serif;font-size:0.92rem;
+  line-height:1.65;color:var(--text);margin-bottom:0.8rem;
+}
+.term-example{
+  margin-top:0.8rem;padding-top:0.8rem;
+  border-top:1px dashed rgba(0,240,255,0.2);
+  font-family:'Share Tech Mono',monospace;font-size:0.72rem;
+  color:var(--mute);letter-spacing:0.05em;
+}
+.term-example::before{content:'// CASE: ';color:var(--yellow)}
+
+.term-actions{
+  margin-top:auto;padding-top:0.8rem;
+  display:flex;gap:0.5rem;
+}
+.term-action-btn{
+  flex:1;background:transparent;color:var(--mute);
+  border:1px solid rgba(0,240,255,0.2);
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.4rem 0.5rem;cursor:pointer;transition:all 0.2s;
+}
+.term-action-btn:hover{color:var(--cyan);border-color:var(--cyan)}
+.term-action-btn.learn-toggle.is-learned{
+  background:var(--green);color:var(--bg);border-color:var(--green);
+}
+
+/* ===== TOAST CONTAINER ===== */
+.toast-container{
+  position:fixed;top:5rem;right:1rem;z-index:1000;
+  display:flex;flex-direction:column;gap:0.5rem;
+  pointer-events:none;
+}
+.toast{
+  background:var(--green);color:var(--bg);
+  font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  letter-spacing:0.1em;padding:0.7rem 1rem;font-weight:700;
+  border-left:4px solid var(--bg);
+  animation:toastIn 0.3s ease-out,toastOut 0.3s ease-in 2.7s forwards;
+  pointer-events:auto;min-width:200px;
+}
+.toast.info{background:var(--cyan)}
+.toast.warn{background:var(--warn);color:#fff}
+.toast.error{background:var(--magenta);color:#fff}
+@keyframes toastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastOut{to{transform:translateX(120%);opacity:0}}
+
+/* ===== MODAL ===== */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(5,6,10,0.85);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  z-index:500;display:none;align-items:center;justify-content:center;
+  padding:1rem;
+}
+.modal-backdrop.open{display:flex}
+.modal-box{
+  background:var(--panel);border:2px solid var(--cyan);
+  max-width:500px;width:100%;padding:2rem;
+  clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));
+  animation:modalIn 0.25s ease-out;
+}
+@keyframes modalIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-box h3{
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:1.3rem;
+  color:var(--cyan);margin-bottom:1rem;text-transform:uppercase;
+  letter-spacing:0.05em;
+}
+.modal-box p{margin-bottom:1.5rem;line-height:1.7;color:var(--text)}
+.modal-actions{display:flex;gap:0.8rem;justify-content:flex-end;flex-wrap:wrap}
+.modal-actions button{
+  background:transparent;color:var(--mute);border:1px solid var(--mute);
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.6rem 1.2rem;cursor:pointer;transition:all 0.2s;
+}
+.modal-actions button.primary{
+  background:var(--magenta);color:#fff;border-color:var(--magenta);font-weight:700;
+}
+.modal-actions button.primary:hover{background:#ff3355;box-shadow:0 0 15px var(--magenta)}
+.modal-actions button:hover{color:var(--cyan);border-color:var(--cyan)}
+
+/* ===== DRAWER ===== */
+.drawer-backdrop{
+  position:fixed;inset:0;background:rgba(5,6,10,0.6);
+  z-index:500;display:none;
+}
+.drawer-backdrop.open{display:block}
+.drawer-panel{
+  position:fixed;top:0;right:-400px;width:380px;max-width:90vw;height:100vh;
+  background:var(--panel);border-left:2px solid var(--cyan);
+  z-index:600;padding:2rem 1.5rem;
+  transition:right 0.3s cubic-bezier(0.4,0,0.2,1);
+  overflow-y:auto;
+}
+.drawer-panel.open{right:0}
+.drawer-panel h3{
+  font-family:'Orbitron',sans-serif;color:var(--yellow);
+  font-size:1.2rem;margin-bottom:1rem;letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+.drawer-panel .close-btn{
+  position:absolute;top:1rem;right:1rem;background:none;border:none;
+  color:var(--cyan);font-family:'Share Tech Mono',monospace;
+  font-size:1.5rem;cursor:pointer;
+}
+.drawer-content{font-size:0.9rem;line-height:1.7;color:var(--text)}
+.drawer-content code{
+  background:var(--bg);color:var(--green);padding:0.1rem 0.4rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.85em;
+}
+
+/* ===== BOTTOM SHEET ===== */
+.sheet-backdrop{
+  position:fixed;inset:0;background:rgba(5,6,10,0.7);
+  z-index:500;display:none;
+}
+.sheet-backdrop.open{display:block}
+.sheet-panel{
+  position:fixed;bottom:-100%;left:0;right:0;
+  max-height:60vh;background:var(--panel);
+  border-top:2px solid var(--cyan);
+  z-index:600;padding:2rem 1.5rem;
+  transition:bottom 0.3s cubic-bezier(0.4,0,0.2,1);
+  overflow-y:auto;
+}
+.sheet-panel.open{bottom:0}
+.sheet-handle{
+  width:50px;height:4px;background:var(--cyan);
+  margin:-1rem auto 1.5rem;border-radius:2px;
+}
+.sheet-panel h3{
+  font-family:'Orbitron',sans-serif;color:var(--cyan);
+  font-size:1.2rem;text-align:center;margin-bottom:1rem;
+  letter-spacing:0.05em;text-transform:uppercase;
+}
+.sheet-options{display:grid;gap:0.6rem;max-width:400px;margin:0 auto}
+.sheet-option{
+  background:var(--bg);color:var(--text);
+  border:1px solid rgba(0,240,255,0.3);
+  font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  letter-spacing:0.1em;padding:0.8rem 1rem;cursor:pointer;
+  transition:all 0.2s;text-align:left;
+}
+.sheet-option:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ===== TOOLTIP ===== */
+.tooltip-wrap{position:relative;display:inline-block}
+.tooltip-trigger{
+  background:var(--bg);color:var(--cyan);
+  border:1px solid var(--cyan);width:36px;height:36px;
+  border-radius:50%;cursor:help;font-family:'Share Tech Mono',monospace;
+  font-size:1rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.tooltip-content{
+  position:absolute;bottom:calc(100% + 8px);left:50%;
+  transform:translateX(-50%) scale(0);transform-origin:bottom center;
+  background:var(--cyan);color:var(--bg);
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  padding:0.4rem 0.7rem;white-space:nowrap;letter-spacing:0.1em;
+  text-transform:uppercase;font-weight:700;
+  transition:transform 0.15s ease;pointer-events:none;
+}
+.tooltip-content::after{
+  content:'';position:absolute;top:100%;left:50%;
+  transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--cyan);
+}
+.tooltip-wrap:hover .tooltip-content{transform:translateX(-50%) scale(1)}
+
+/* ===== POPOVER ===== */
+.popover-wrap{position:relative;display:inline-block}
+.popover-content{
+  position:absolute;top:calc(100% + 8px);left:50%;
+  transform:translateX(-50%) scale(0);transform-origin:top center;
+  background:var(--panel);border:1px solid var(--magenta);
+  padding:1rem;width:240px;z-index:50;
+  transition:transform 0.2s ease;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+}
+.popover-content.open{transform:translateX(-50%) scale(1)}
+.popover-content::before{
+  content:'';position:absolute;bottom:100%;left:50%;
+  transform:translateX(-50%);
+  border:6px solid transparent;border-bottom-color:var(--magenta);
+}
+.popover-content p{font-size:0.85rem;margin-bottom:0.7rem;line-height:1.5}
+.popover-content button{
+  background:var(--magenta);color:#fff;border:none;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  letter-spacing:0.1em;padding:0.4rem 0.8rem;cursor:pointer;
+  width:100%;font-weight:700;
+}
+
+/* ===== SLIDER ===== */
+.slider-demo{display:flex;align-items:center;gap:0.8rem;width:100%}
+.slider-demo input[type=range]{
+  flex:1;-webkit-appearance:none;appearance:none;
+  height:4px;background:var(--bg-2);outline:none;
+  border:1px solid var(--cyan);cursor:pointer;
+}
+.slider-demo input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:16px;height:16px;background:var(--yellow);cursor:pointer;
+  border:2px solid var(--bg);
+}
+.slider-demo input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;background:var(--yellow);cursor:pointer;
+  border:2px solid var(--bg);
+}
+.slider-demo .val{
+  font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  color:var(--yellow);font-weight:700;min-width:32px;text-align:right;
+}
+
+/* ===== TOGGLE ===== */
+.toggle-demo{
+  display:flex;align-items:center;gap:0.8rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.8rem;
+  color:var(--mute);letter-spacing:0.1em;
+}
+.toggle-switch{
+  position:relative;width:48px;height:24px;
+  background:var(--bg-2);border:1px solid var(--mute);
+  cursor:pointer;transition:all 0.2s;
+}
+.toggle-switch::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:18px;height:18px;background:var(--mute);
+  transition:all 0.2s;
+}
+.toggle-switch.on{background:var(--green);border-color:var(--green)}
+.toggle-switch.on::after{left:26px;background:var(--bg)}
+.toggle-demo .status{color:var(--mute);font-weight:700}
+.toggle-demo .status.on{color:var(--green)}
+
+/* ===== CHECKBOX ===== */
+.checkbox-demo{display:flex;flex-direction:column;gap:0.5rem;width:100%}
+.cb-item{
+  display:flex;align-items:center;gap:0.6rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.78rem;
+  color:var(--text);cursor:pointer;
+}
+.cb-box{
+  width:18px;height:18px;border:1px solid var(--cyan);
+  background:var(--bg);display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;
+}
+.cb-item.checked .cb-box{background:var(--cyan)}
+.cb-item.checked .cb-box::after{
+  content:'✓';color:var(--bg);font-weight:700;font-size:0.85rem;
+}
+
+/* ===== RADIO ===== */
+.radio-demo{display:flex;flex-direction:column;gap:0.5rem;width:100%}
+.rd-item{
+  display:flex;align-items:center;gap:0.6rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.78rem;
+  color:var(--text);cursor:pointer;
+}
+.rd-circle{
+  width:18px;height:18px;border:1px solid var(--yellow);
+  border-radius:50%;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+.rd-item.checked .rd-circle::after{
+  content:'';width:8px;height:8px;background:var(--yellow);border-radius:50%;
+}
+
+/* ===== DROPDOWN ===== */
+.dropdown-demo{position:relative;width:100%;max-width:200px}
+.dropdown-trigger{
+  width:100%;background:var(--bg);color:var(--text);
+  border:1px solid var(--cyan);
+  font-family:'Share Tech Mono',monospace;font-size:0.78rem;
+  letter-spacing:0.05em;padding:0.5rem 0.8rem;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.dropdown-trigger::after{content:'▼';color:var(--cyan);transition:transform 0.2s}
+.dropdown-demo.open .dropdown-trigger::after{transform:rotate(180deg)}
+.dropdown-menu{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:var(--panel);border:1px solid var(--cyan);
+  z-index:10;max-height:0;overflow:hidden;
+  transition:max-height 0.2s;
+}
+.dropdown-demo.open .dropdown-menu{max-height:200px}
+.dropdown-menu .opt{
+  padding:0.5rem 0.8rem;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;font-size:0.78rem;
+  color:var(--text);transition:all 0.1s;
+}
+.dropdown-menu .opt:hover{background:var(--cyan);color:var(--bg)}
+
+/* ===== INPUT ===== */
+.input-demo{
+  width:100%;background:var(--bg);color:var(--text);
+  border:1px solid var(--cyan);
+  font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  padding:0.55rem 0.8rem;outline:none;
+}
+.input-demo:focus{border-color:var(--yellow);box-shadow:0 0 8px rgba(252,238,10,0.3)}
+.input-demo::placeholder{color:var(--mute)}
+
+/* ===== TABS ===== */
+.tabs-demo{width:100%}
+.tabs-nav{
+  display:flex;border-bottom:1px solid rgba(0,240,255,0.3);
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+}
+.tab-btn{
+  background:none;border:none;color:var(--mute);
+  padding:0.5rem 0.8rem;cursor:pointer;
+  letter-spacing:0.1em;text-transform:uppercase;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab-content{padding:0.8rem 0;font-size:0.82rem;color:var(--text);min-height:30px}
+
+/* ===== ACCORDION ===== */
+.accordion-demo{width:100%}
+.acc-item{
+  border:1px solid rgba(0,240,255,0.2);margin-bottom:0.3rem;
+}
+.acc-trigger{
+  width:100%;background:var(--bg);color:var(--cyan);
+  border:none;text-align:left;padding:0.5rem 0.8rem;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;font-size:0.78rem;
+  letter-spacing:0.05em;display:flex;justify-content:space-between;
+}
+.acc-trigger::after{content:'+';color:var(--yellow);transition:transform 0.2s}
+.acc-item.open .acc-trigger::after{transform:rotate(45deg)}
+.acc-content{
+  max-height:0;overflow:hidden;transition:max-height 0.2s;
+  font-size:0.78rem;color:var(--text);
+}
+.acc-item.open .acc-content{max-height:100px;padding:0.5rem 0.8rem}
+
+/* ===== CAROUSEL ===== */
+.carousel-demo{width:100%;text-align:center}
+.carousel-stage{
+  background:var(--bg);border:1px solid var(--cyan);
+  height:60px;display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:1.2rem;
+  color:var(--yellow);font-weight:700;
+}
+.carousel-dots{display:flex;justify-content:center;gap:0.4rem;margin-top:0.5rem}
+.carousel-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--mute);cursor:pointer;transition:all 0.2s;border:none;padding:0;
+}
+.carousel-dot.active{background:var(--cyan);transform:scale(1.3)}
+
+/* ===== PROGRESS ===== */
+.progress-demo{width:100%;font-family:'Share Tech Mono',monospace}
+.progress-track{
+  width:100%;height:8px;background:var(--bg-2);
+  border:1px solid var(--cyan);position:relative;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--cyan),var(--yellow));
+  width:0%;transition:width 0.1s linear;
+}
+.progress-text{
+  font-size:0.75rem;color:var(--yellow);margin-top:0.4rem;
+  text-align:center;letter-spacing:0.1em;
+}
+
+/* ===== SPINNER ===== */
+.spinner-demo{display:flex;align-items:center;justify-content:center;gap:0.8rem}
+.spinner{
+  width:30px;height:30px;border:3px solid var(--bg-2);
+  border-top-color:var(--yellow);border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-demo .label{
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+  color:var(--cyan);letter-spacing:0.1em;
+}
+
+/* ===== FAB ===== */
+.fab-demo{position:relative;width:100%;height:80px;background:var(--bg-2)}
+.fab-demo .lines{
+  position:absolute;top:1rem;left:1rem;right:1rem;
+  display:flex;flex-direction:column;gap:0.3rem;
+}
+.fab-demo .lines span{
+  height:4px;background:var(--mute);
+}
+.fab-demo .lines span:nth-child(1){width:70%}
+.fab-demo .lines span:nth-child(2){width:50%}
+.fab-demo .lines span:nth-child(3){width:60%}
+.fab-btn{
+  position:absolute;bottom:0.6rem;right:0.6rem;
+  width:36px;height:36px;border-radius:50%;
+  background:var(--magenta);color:#fff;border:none;
+  font-size:1.3rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;box-shadow:0 2px 8px rgba(255,0,60,0.5);
+}
+.fab-btn:hover{transform:scale(1.1) rotate(90deg)}
+
+/* ===== BREADCRUMB ===== */
+.breadcrumb-demo{
+  font-family:'Share Tech Mono',monospace;font-size:0.78rem;
+  color:var(--mute);letter-spacing:0.05em;
+}
+.breadcrumb-demo a{color:var(--mute);text-decoration:none;cursor:pointer}
+.breadcrumb-demo a:hover{color:var(--cyan)}
+.breadcrumb-demo .sep{color:var(--cyan);margin:0 0.3rem}
+.breadcrumb-demo .current{color:var(--yellow);font-weight:700}
+
+/* ===== BADGE ===== */
+.badge-demo{display:flex;gap:0.6rem;align-items:center}
+.badge-icon{
+  position:relative;width:32px;height:32px;
+  background:var(--bg-2);border:1px solid var(--cyan);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+}
+.badge-num{
+  position:absolute;top:-6px;right:-6px;
+  background:var(--magenta);color:#fff;
+  border-radius:50%;width:18px;height:18px;
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  font-weight:700;display:flex;align-items:center;justify-content:center;
+}
+.chip-list{display:flex;flex-wrap:wrap;gap:0.3rem;justify-content:center}
+.chip{
+  background:var(--bg-2);color:var(--cyan);
+  border:1px solid var(--cyan);
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.1em;padding:0.15rem 0.5rem;cursor:pointer;
+  transition:all 0.15s;
+}
+.chip.active{background:var(--cyan);color:var(--bg);font-weight:700}
+
+/* ===== HEADER / NAVBAR DEMO ===== */
+.navbar-demo{
+  width:100%;background:var(--bg-2);border:1px solid var(--cyan);
+  padding:0.5rem;display:flex;justify-content:space-between;align-items:center;
+}
+.navbar-demo .logo{
+  font-family:'Orbitron',sans-serif;font-weight:700;
+  color:var(--magenta);font-size:0.85rem;letter-spacing:0.1em;
+}
+.navbar-demo .navlinks{display:flex;gap:0.5rem}
+.navbar-demo .navlinks a{
+  color:var(--text);font-family:'Share Tech Mono',monospace;
+  font-size:0.7rem;text-decoration:none;cursor:pointer;
+  letter-spacing:0.1em;
+}
+.navbar-demo .navlinks a:hover{color:var(--cyan)}
+
+/* ===== SIDEBAR DEMO ===== */
+.sidebar-demo{
+  width:100%;display:flex;border:1px solid var(--cyan);
+  background:var(--bg-2);min-height:80px;
+}
+.sidebar-side{
+  width:80px;background:var(--bg);border-right:1px solid var(--cyan);
+  padding:0.5rem;display:flex;flex-direction:column;gap:0.3rem;
+}
+.sidebar-side .item{
+  color:var(--mute);font-family:'Share Tech Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.05em;cursor:pointer;
+  padding:0.2rem;transition:all 0.15s;
+}
+.sidebar-side .item.active{color:var(--cyan);background:rgba(0,240,255,0.1)}
+.sidebar-side .item:hover{color:var(--cyan)}
+.sidebar-main{
+  flex:1;padding:0.5rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:var(--text);letter-spacing:0.05em;
+}
+
+/* ===== CARD DEMO ===== */
+.card-demo{
+  width:100%;background:var(--bg-2);border:1px solid var(--yellow);
+  padding:0.8rem;
+}
+.card-demo .ttl{
+  font-family:'Orbitron',sans-serif;font-weight:700;
+  color:var(--yellow);font-size:0.85rem;margin-bottom:0.3rem;
+}
+.card-demo .body{
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:var(--text);letter-spacing:0.05em;
+}
+
+/* ===== BUTTON DEMO ===== */
+.button-demo{display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center}
+.btn-sample{
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  letter-spacing:0.1em;padding:0.4rem 0.8rem;cursor:pointer;
+  text-transform:uppercase;font-weight:700;border:1px solid;transition:all 0.15s;
+}
+.btn-sample.primary{background:var(--cyan);color:var(--bg);border-color:var(--cyan)}
+.btn-sample.secondary{background:transparent;color:var(--cyan);border-color:var(--cyan)}
+.btn-sample.ghost{background:transparent;color:var(--mute);border-color:transparent}
+.btn-sample.destructive{background:var(--magenta);color:#fff;border-color:var(--magenta)}
+.btn-sample:hover{transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--yellow)}
+
+/* ===== PROMPT SECTION ===== */
+.prompt-section{
+  background:radial-gradient(circle at 30% 50%,rgba(255,0,60,0.08) 0%,transparent 50%),
+             radial-gradient(circle at 70% 50%,rgba(0,240,255,0.08) 0%,transparent 50%),
+             var(--bg);
+}
+.prompt-grid{
+  max-width:1500px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:1.5rem;
+}
+.principle{
+  position:relative;background:var(--panel);
+  border:1px solid var(--cyan);padding:2rem 1.8rem 1.8rem;
+}
+.principle::before{
+  content:'';position:absolute;top:-1px;right:-1px;
+  width:30px;height:30px;background:var(--cyan);
+  clip-path:polygon(0 0,100% 0,100% 100%);
+}
+.principle::after{
+  content:'';position:absolute;bottom:0;left:0;
+  width:100%;height:3px;
+  background:linear-gradient(90deg,var(--magenta),var(--cyan),var(--yellow));
+}
+.principle-num{
+  position:absolute;top:-0.6rem;left:1.5rem;
+  background:var(--bg);color:var(--magenta);
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.8rem;
+  padding:0.2rem 0.8rem;border:1px solid var(--magenta);
+  letter-spacing:0.2em;
+}
+.principle h3{
+  font-family:'Orbitron','Noto Sans TC',sans-serif;font-weight:700;
+  font-size:1.3rem;margin-bottom:1rem;letter-spacing:0.01em;color:var(--text);
+}
+.principle h3 .ny{color:var(--yellow)}
+.principle p{
+  font-family:'Noto Sans TC',sans-serif;font-size:0.92rem;
+  line-height:1.65;margin-bottom:1rem;color:var(--text);
+}
+.prompt-compare{margin-top:1rem;display:grid;gap:0.7rem}
+.prompt-bad,.prompt-good{
+  padding:0.9rem 1rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.78rem;
+  line-height:1.55;position:relative;padding-left:5rem;
+}
+.prompt-bad{border:1px solid var(--magenta);background:rgba(255,0,60,0.08);color:#ffd0dc}
+.prompt-good{border:1px solid var(--green);background:rgba(57,255,20,0.06);color:#d4ffd4}
+.prompt-bad::before{content:'[ERR]';position:absolute;left:0.8rem;top:0.9rem;color:var(--magenta);font-weight:700}
+.prompt-good::before{content:'[OK]';position:absolute;left:0.8rem;top:0.9rem;color:var(--green);font-weight:700}
+.copy-good{
+  background:transparent;color:var(--green);
+  border:1px solid var(--green);
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.15em;padding:0.3rem 0.6rem;cursor:pointer;
+  margin-top:0.4rem;text-transform:uppercase;
+  transition:all 0.15s;
+}
+.copy-good:hover{background:var(--green);color:var(--bg);font-weight:700}
+.copy-good.done{background:var(--green);color:var(--bg);font-weight:700}
+
+/* ===== TEMPLATE ===== */
+.template{
+  max-width:1100px;margin:3rem auto 0;
+  background:var(--bg-2);border:1px solid var(--yellow);position:relative;
+}
+.template-header{
+  background:var(--yellow);color:var(--bg);padding:0.5rem 1.5rem;
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.8rem;
+  letter-spacing:0.3em;text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.template-header button{
+  background:var(--bg);color:var(--yellow);border:1px solid var(--bg);
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  letter-spacing:0.1em;padding:0.2rem 0.6rem;cursor:pointer;
+}
+.template-header button:hover{background:var(--yellow);color:var(--bg);border-color:var(--bg)}
+.template-body{padding:2rem 2.5rem}
+.template h3{
+  font-family:'Orbitron',sans-serif;font-size:1.3rem;
+  margin-bottom:1.2rem;color:var(--cyan);text-transform:uppercase;
+}
+.template pre{
+  font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  line-height:1.85;white-space:pre-wrap;color:var(--text);
+}
+.template .field{color:var(--yellow);font-weight:700}
+.template .var{color:var(--cyan)}
+.template .comment{color:var(--mute)}
+
+/* ===== CLI ===== */
+.cli-section{background:var(--bg-2)}
+.cli-grid{
+  max-width:1500px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;
+}
+.cli-card{
+  background:var(--panel);border:1px solid rgba(0,240,255,0.3);
+  position:relative;overflow:hidden;
+}
+.cli-card-header{
+  background:linear-gradient(90deg,var(--cyan) 0%,transparent 100%);
+  color:var(--bg);padding:0.6rem 1.5rem;
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.95rem;
+  letter-spacing:0.05em;text-transform:uppercase;
+  display:flex;align-items:center;gap:0.8rem;
+}
+.cli-card-header .num{
+  background:var(--bg);color:var(--cyan);
+  width:24px;height:24px;display:inline-flex;
+  align-items:center;justify-content:center;
+  font-family:'Share Tech Mono',monospace;
+}
+.cli-card-body{padding:1.5rem 1.8rem}
+.cli-card-body p{font-size:0.95rem;line-height:1.65;margin-bottom:1rem}
+.cli-card-body code{
+  background:rgba(0,240,255,0.1);color:var(--cyan);
+  padding:0.1rem 0.4rem;font-family:'Share Tech Mono',monospace;
+  font-size:0.85em;border:1px solid rgba(0,240,255,0.2);
+}
+.cli-card pre{
+  background:var(--bg);color:var(--text);padding:1.2rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.82rem;
+  line-height:1.6;overflow-x:auto;margin:1rem 0;
+  border-left:3px solid var(--yellow);position:relative;
+}
+.cli-card pre .copy-btn{
+  position:absolute;top:0.4rem;right:0.4rem;
+  background:transparent;color:var(--mute);
+  border:1px solid var(--mute);
+  font-family:'Share Tech Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.1em;padding:0.1rem 0.4rem;cursor:pointer;
+  text-transform:uppercase;transition:all 0.15s;
+}
+.cli-card pre .copy-btn:hover{color:var(--yellow);border-color:var(--yellow)}
+.cli-card pre .copy-btn.done{color:var(--green);border-color:var(--green)}
+.cli-card pre .c{color:var(--mute);font-style:italic}
+.cli-card pre .f{color:var(--yellow)}
+.cli-card pre .s{color:var(--green)}
+.cli-card pre .k{color:var(--magenta);font-weight:700}
+
+.cli-card ul{list-style:none;margin-top:0.8rem}
+.cli-card li{
+  padding:0.5rem 0 0.5rem 1.8rem;position:relative;
+  font-size:0.92rem;border-bottom:1px dashed rgba(0,240,255,0.1);
+}
+.cli-card li:last-child{border-bottom:none}
+.cli-card li::before{
+  content:'◢';position:absolute;left:0;top:0.6rem;
+  color:var(--yellow);font-size:0.85em;
+}
+
+/* ===== TERMINAL SIMULATOR ===== */
+.terminal-sim{
+  max-width:1000px;margin:3rem auto 0;
+  background:#000;border:1px solid var(--cyan);
+}
+.terminal-header{
+  background:var(--cyan);color:var(--bg);
+  padding:0.4rem 1rem;font-family:'Share Tech Mono',monospace;
+  font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.terminal-header .dots{display:flex;gap:0.3rem}
+.terminal-header .dot{width:10px;height:10px;border-radius:50%;background:var(--bg)}
+.terminal-body{
+  padding:1.5rem;font-family:'Share Tech Mono',monospace;
+  font-size:0.85rem;line-height:1.6;color:#a8e9ff;
+  min-height:300px;max-height:400px;overflow-y:auto;
+}
+.terminal-body .prompt{color:var(--green)}
+.terminal-body .cmd{color:#fff}
+.terminal-body .out{color:#a8e9ff;margin-left:1rem}
+.terminal-body .err{color:#ff7b8a}
+.terminal-body .cursor{
+  display:inline-block;width:8px;height:14px;background:var(--green);
+  vertical-align:middle;animation:blink 1s steps(2) infinite;
+}
+.terminal-input{
+  display:flex;align-items:center;
+  border-top:1px solid var(--cyan);padding:0.5rem 1.5rem;
+  background:var(--bg);
+}
+.terminal-input .ps{color:var(--green);font-family:'Share Tech Mono',monospace;font-size:0.85rem;margin-right:0.5rem}
+.terminal-input input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+}
+.terminal-quick{
+  padding:0.6rem 1.5rem;background:var(--bg-2);
+  display:flex;gap:0.4rem;flex-wrap:wrap;
+  border-top:1px solid rgba(0,240,255,0.2);
+}
+.terminal-quick button{
+  background:transparent;color:var(--mute);
+  border:1px solid var(--mute);
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.05em;padding:0.25rem 0.6rem;cursor:pointer;
+  transition:all 0.15s;
+}
+.terminal-quick button:hover{color:var(--yellow);border-color:var(--yellow)}
+
+/* ===== FOOTER ===== */
+footer{
+  position:relative;z-index:3;background:var(--bg);
+  border-top:2px solid var(--cyan);padding:4rem 5vw 2rem;text-align:center;
+}
+footer .quote{
+  font-family:'Orbitron','Noto Sans TC',sans-serif;
+  font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:500;
+  color:var(--yellow);text-transform:uppercase;
+  letter-spacing:0.05em;max-width:800px;margin:0 auto;line-height:1.4;
+}
+footer .quote .hl{color:var(--magenta)}
+footer .progress-summary{
+  margin:2rem auto;max-width:600px;
+  font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  color:var(--cyan);letter-spacing:0.1em;
+}
+footer .progress-summary .bar{
+  height:6px;background:var(--bg-2);border:1px solid var(--cyan);
+  margin:0.5rem 0;position:relative;overflow:hidden;
+}
+footer .progress-summary .bar-fill{
+  height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));
+  width:0%;transition:width 0.3s;
+}
+footer .progress-summary .reset-btn{
+  background:transparent;color:var(--magenta);border:1px solid var(--magenta);
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  letter-spacing:0.1em;padding:0.3rem 0.8rem;cursor:pointer;margin-top:0.5rem;
+}
+footer .progress-summary .reset-btn:hover{background:var(--magenta);color:#fff}
+footer .colophon{
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  letter-spacing:0.2em;margin-top:2rem;color:var(--mute);
+  text-transform:uppercase;line-height:1.8;
+}
+footer .colophon .c{color:var(--cyan)}
+
+@media (max-width:768px){
+  .cli-grid{grid-template-columns:1fr}
+  .hero-meta{grid-template-columns:1fr}
+  .hero-stats{text-align:left;border-left:none;padding-left:0;border-top:1px solid var(--cyan);padding-top:1rem}
+  .hero-bottom{grid-template-columns:repeat(2,1fr)}
+  .section-head{grid-template-columns:1fr;gap:1rem}
+  .section-head .id{text-align:left}
+  .sticky-nav{flex-direction:column;gap:0.5rem;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== Modal ===== -->
+<div class="modal-backdrop" id="modalDemo">
+  <div class="modal-box">
+    <h3>確認刪除</h3>
+    <p>此操作無法復原。要繼續嗎?這就是 Modal 的典型用法——它強制你做決定,點背景或按 Esc 才能關閉。</p>
+    <div class="modal-actions">
+      <button onclick="closeModal('modalDemo')">取消</button>
+      <button class="primary" onclick="confirmDelete()">刪除</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Drawer ===== -->
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+<div class="drawer-panel" id="drawerPanel">
+  <button class="close-btn" onclick="closeDrawer()">[X]</button>
+  <h3>// SETTINGS.PANEL</h3>
+  <div class="drawer-content">
+    <p>Drawer(抽屜)從畫面邊緣滑入。比 Modal 更輕量,常用於:</p>
+    <ul style="margin:1rem 0;padding-left:1.5rem">
+      <li>手機版 <code>漢堡選單</code></li>
+      <li>側邊評論面板</li>
+      <li>篩選器 / 購物車</li>
+      <li>檔案總管</li>
+    </ul>
+    <p>背景變暗但不會完全擋住,使用者可以隨時點外面關閉。</p>
+    <p style="margin-top:1.5rem;color:var(--cyan)">⌨ 鍵盤快捷:Esc 關閉</p>
+  </div>
+</div>
+
+<!-- ===== Bottom Sheet ===== -->
+<div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSheet()"></div>
+<div class="sheet-panel" id="sheetPanel">
+  <div class="sheet-handle"></div>
+  <h3>// SHARE.TO</h3>
+  <div class="sheet-options">
+    <button class="sheet-option" onclick="pickShare('Telegram')">📡 Telegram</button>
+    <button class="sheet-option" onclick="pickShare('Signal')">🛰 Signal</button>
+    <button class="sheet-option" onclick="pickShare('Email')">✉ Email</button>
+    <button class="sheet-option" onclick="pickShare('Copy Link')">⧉ 複製連結</button>
+  </div>
+</div>
+
+<!-- ===== STICKY NAV ===== -->
+<nav class="sticky-nav">
+  <div class="brand">UI://GLOSSARY.v3</div>
+  <div class="links">
+    <a href="#overlay">01 OVERLAY</a>
+    <a href="#input">02 INPUT</a>
+    <a href="#layout">03 LAYOUT</a>
+    <a href="#prompt">04 PROMPT</a>
+    <a href="#cli">05 CLI</a>
+    <a href="#cheat">06 CHEAT</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="bracket tl"></div><div class="bracket tr"></div>
+  <div class="bracket bl"></div><div class="bracket br"></div>
+
+  <div class="hero-top">
+    <span>SYS::UI_GLOSSARY.RUN</span>
+    <span class="center">NIGHT CITY // INTERACTIVE EDITION</span>
+    <span class="right blink">CONN_OK // CLAUDE.LINK</span>
+  </div>
+
+  <div class="hero-main">
+    <span class="hero-tag">// UI://COMPONENT_LEXICON.v3</span>
+    <h1>
+      MODAL.<span class="glitch">DRAWER</span>.TOAST
+      <span class="ja">給 CLAUDE 的精準指令協議</span>
+      <span class="v3">>> INTERACTIVE EDITION · 點點看 ·</span>
+    </h1>
+    <div class="hero-meta">
+      <p>
+        在 Night City,光說不練是沒用的。
+        這版每個 UI 元件都<span class="hl">真的能點</span>——
+        點 Toast 看它跳出、拉 Slider 看數字變動、開 Modal 看背景變暗。
+        順手把任務<span class="hl-y">標記為已學會</span>,進度自動存進瀏覽器。
+        外加一個<span class="hl-g">假終端機</span>,
+        讓你不裝 Claude Code 也能練習指令。
+      </p>
+      <div class="hero-stats">
+        <div>VERSION ··· <span class="val">3.077</span></div>
+        <div>UI ENTRIES ··· <span class="val">24</span></div>
+        <div>INTERACTIVE ··· <span class="val">YES</span></div>
+        <div>CLI FLAGS ··· <span class="val">30+</span></div>
+        <div>STATUS ··· <span class="val">DECRYPTED</span></div>
+      </div>
+    </div>
+    <div class="hero-cta">
+      <button onclick="document.getElementById('overlay').scrollIntoView({behavior:'smooth'})">▶ 開始探索</button>
+      <button class="alt" onclick="document.getElementById('terminal').scrollIntoView({behavior:'smooth'})">⌨ 試玩終端機</button>
+    </div>
+  </div>
+
+  <div class="hero-bottom">
+    <div>01-03 · UI 元件(可互動)</div>
+    <div>04 · PROMPT 協議</div>
+    <div>05 · CLAUDE CLI(可試玩)</div>
+    <div>06 · 速查表</div>
+  </div>
+</section>
+
+<!-- ===== FILTER BAR ===== -->
+<section class="section" id="overlay">
+  <div class="section-head">
+    <div class="section-num">01</div>
+    <div class="titles">
+      <h2>OVERLAY.<span class="ny">SYSTEM</span></h2>
+      <div class="sub">// 覆蓋型元件 · 點按鈕看實際運作</div>
+    </div>
+    <div class="id">
+      DIR::/overlay<br>
+      <span class="live">6 NODES · CLICK TO DEMO</span>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" class="search-input" id="searchInput" placeholder="// SEARCH UI 元件名稱、用途、用法...">
+    <button class="filter-btn active" data-filter="all">全部</button>
+    <button class="filter-btn" data-filter="overlay">OVERLAY</button>
+    <button class="filter-btn" data-filter="input">INPUT</button>
+    <button class="filter-btn" data-filter="layout">LAYOUT</button>
+    <button class="filter-btn" data-filter="learned">已學會</button>
+    <span class="filter-counter" id="filterCounter">// 24 / 24</span>
+  </div>
+
+  <div class="terms" id="termsOverlay">
+
+    <article class="term" data-cat="overlay" data-id="modal" data-keywords="modal dialog 視窗 對話框 彈窗 確認 刪除">
+      <div class="term-header">
+        <span class="term-id">ID::0x01A</span>
+        <span class="term-tag danger">BLOCKING</span>
+      </div>
+      <div class="term-demo">
+        <button class="demo-trigger" onclick="openModal('modalDemo')">▶ 開啟 MODAL</button>
+      </div>
+      <div class="term-zh">模態視窗</div>
+      <div class="term-en">Modal · Dialog</div>
+      <p class="term-def">覆蓋在主畫面上、會把背景變暗(backdrop)並阻止其他操作的視窗。必須由使用者明確關閉才能繼續。</p>
+      <p class="term-example">確認刪除、登入表單、編輯資料</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'modal')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Modal 對話框,標題「確認刪除」,內文「此操作無法復原」,主按鈕「刪除」(紅色 destructive),次按鈕「取消」。按 Esc 或點背景可關閉。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="overlay" data-id="drawer" data-keywords="drawer sheet 抽屜 側欄 滑入 panel">
+      <div class="term-header">
+        <span class="term-id">ID::0x01B</span>
+        <span class="term-tag">SLIDE-IN</span>
+      </div>
+      <div class="term-demo">
+        <button class="demo-trigger" onclick="openDrawer()">▶ 開啟 DRAWER</button>
+      </div>
+      <div class="term-zh">抽屜面板</div>
+      <div class="term-en">Drawer · Side Sheet</div>
+      <p class="term-def">從畫面邊緣(左/右/上/下)滑入的面板。比 Modal 輕,常用於選單、篩選器、購物車。</p>
+      <p class="term-example">手機漢堡選單、Notion 評論欄</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'drawer')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個從右側滑入的 Drawer 元件,寬 380px,內含設定面板。背景變暗 60%,點背景或按 Esc 可關閉,動畫時長 300ms。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="overlay" data-id="bottomsheet" data-keywords="bottom sheet 底部 滑出 手機 mobile">
+      <div class="term-header">
+        <span class="term-id">ID::0x01C</span>
+        <span class="term-tag">MOBILE</span>
+      </div>
+      <div class="term-demo">
+        <button class="demo-trigger" onclick="openSheet()">▶ 開啟 BOTTOM SHEET</button>
+      </div>
+      <div class="term-zh">底部彈出表</div>
+      <div class="term-en">Bottom Sheet</div>
+      <p class="term-def">從畫面底部往上滑出的面板。可拖曳調整高度,手機 UI 的主流選擇。頂部通常有一個小拉桿(handle)提示可拖動。</p>
+      <p class="term-example">iOS 分享選單、Maps 地點詳情</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'bottomsheet')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Bottom Sheet,從畫面底部滑入,最大高度 60vh。頂部顯示小型拉桿手柄,可拖曳調整高度。內含「分享到 LINE / Telegram / Email / 複製連結」四個選項。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="overlay" data-id="toast" data-keywords="toast snackbar 吐司 提示 通知 訊息 短暫">
+      <div class="term-header">
+        <span class="term-id">ID::0x01D</span>
+        <span class="term-tag info">TEMP</span>
+      </div>
+      <div class="term-demo">
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;justify-content:center">
+          <button class="demo-trigger" style="font-size:0.65rem;padding:0.4rem 0.7rem" onclick="showToast('儲存成功','success')">SUCCESS</button>
+          <button class="demo-trigger" style="background:var(--cyan);font-size:0.65rem;padding:0.4rem 0.7rem" onclick="showToast('已複製連結','info')">INFO</button>
+          <button class="demo-trigger" style="background:var(--warn);font-size:0.65rem;padding:0.4rem 0.7rem" onclick="showToast('連線不穩','warn')">WARN</button>
+          <button class="demo-trigger danger" style="font-size:0.65rem;padding:0.4rem 0.7rem" onclick="showToast('傳送失敗','error')">ERROR</button>
+        </div>
+      </div>
+      <div class="term-zh">吐司提示</div>
+      <div class="term-en">Toast · Snackbar</div>
+      <p class="term-def">短暫出現、自動消失的訊息條,通常在底部或角落。不阻擋操作,用於通知結果(成功/失敗)。常見四種色:success/info/warn/error。</p>
+      <p class="term-example">已加入購物車、複製連結成功</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'toast')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Toast 通知系統,出現在畫面右上角,3 秒後自動消失。支援 success(綠)、info(藍)、warn(黃)、error(紅)四種狀態,從右側滑入,可堆疊多個。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="overlay" data-id="tooltip" data-keywords="tooltip 提示 泡泡 hover 滑鼠">
+      <div class="term-header">
+        <span class="term-id">ID::0x01E</span>
+        <span class="term-tag">HOVER</span>
+      </div>
+      <div class="term-demo">
+        <div style="display:flex;gap:0.8rem;align-items:center">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--mute);letter-spacing:0.1em">↘ HOVER:</span>
+          <div class="tooltip-wrap">
+            <button class="tooltip-trigger">?</button>
+            <span class="tooltip-content">這就是 Tooltip</span>
+          </div>
+          <div class="tooltip-wrap">
+            <button class="tooltip-trigger" style="background:var(--yellow);color:var(--bg);border-color:var(--yellow)">i</button>
+            <span class="tooltip-content" style="background:var(--yellow)">資訊性提示</span>
+          </div>
+        </div>
+      </div>
+      <div class="term-zh">提示泡泡</div>
+      <div class="term-en">Tooltip</div>
+      <p class="term-def">滑鼠停在元素上跳出的小提示,內容極簡(一行字),用於補充按鈕、圖示的用途。手機沒有 hover,所以行動裝置會用 Popover 取代。</p>
+      <p class="term-example">圖示 hover 顯示「複製」、「刪除」</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'tooltip')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Tooltip 元件,hover 觸發,放在按鈕上方,延遲 300ms 出現。深色背景,小字單行,寬度自適應內容。手機觸控時不顯示。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="overlay" data-id="popover" data-keywords="popover click 點擊 浮動 面板">
+      <div class="term-header">
+        <span class="term-id">ID::0x01F</span>
+        <span class="term-tag">CLICK</span>
+      </div>
+      <div class="term-demo">
+        <div class="popover-wrap">
+          <button class="demo-trigger" onclick="togglePopover(event,this)">▶ 開啟 POPOVER</button>
+          <div class="popover-content" data-popover>
+            <p style="color:var(--text)">Popover 比 Tooltip 豐富,可放按鈕、表單、列表。</p>
+            <button onclick="showToast('動作執行','info');closeAllPopovers()">執行動作</button>
+          </div>
+        </div>
+      </div>
+      <div class="term-zh">彈出框</div>
+      <div class="term-en">Popover</div>
+      <p class="term-def">點擊後出現的小型浮動面板,內容比 Tooltip 豐富(可含按鈕、表單),與觸發元素有箭頭視覺連結。</p>
+      <p class="term-example">頭像點擊後的帳號選單、emoji 選擇器</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'popover')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Popover 元件,點擊頭像開啟。內含使用者名稱、email、「個人設定」連結、「登出」按鈕。點外面或按 Esc 關閉,需有箭頭指向觸發元素。')">複製 prompt</button>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===== SECTION 02 - INPUT ===== -->
+<section class="section" id="input">
+  <div class="section-head">
+    <div class="section-num">02</div>
+    <div class="titles">
+      <h2>INPUT.<span class="ny">CONTROL</span></h2>
+      <div class="sub">// 輸入控件 · 全部都能操作</div>
+    </div>
+    <div class="id">
+      DIR::/input<br>
+      <span class="live">6 NODES · TRY THEM</span>
+    </div>
+  </div>
+
+  <div class="terms" id="termsInput">
+
+    <article class="term" data-cat="input" data-id="slider" data-keywords="slider range 拉桿 滑桿 範圍">
+      <div class="term-header">
+        <span class="term-id">ID::0x02A</span>
+        <span class="term-tag">RANGE</span>
+      </div>
+      <div class="term-demo">
+        <div class="slider-demo">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--cyan)">VOL</span>
+          <input type="range" min="0" max="100" value="50" oninput="this.parentElement.querySelector('.val').textContent=this.value">
+          <span class="val">50</span>
+        </div>
+      </div>
+      <div class="term-zh">拉桿 / 滑桿</div>
+      <div class="term-en">Slider · Range</div>
+      <p class="term-def">用拖曳的方式在一段數值範圍內選擇值。可單滑塊(選一個值)或雙滑塊(選範圍)。</p>
+      <p class="term-example">音量、亮度、價格篩選範圍</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'slider')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Slider,範圍 0-100,步進為 1,即時顯示當前數值。預設值 50,可鍵盤左右調整,可拖曳。配色用青色軌道 + 黃色滑塊。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="input" data-id="toggle" data-keywords="toggle switch 開關 切換">
+      <div class="term-header">
+        <span class="term-id">ID::0x02B</span>
+        <span class="term-tag ok">TOGGLE</span>
+      </div>
+      <div class="term-demo">
+        <div class="toggle-demo">
+          <span>DARK MODE</span>
+          <div class="toggle-switch on" onclick="toggleSwitch(this)"></div>
+          <span class="status on">ON</span>
+        </div>
+      </div>
+      <div class="term-zh">開關</div>
+      <div class="term-en">Toggle · Switch</div>
+      <p class="term-def">開/關兩態的按鈕,視覺上像實體開關,會「立即生效」不需要再按確認。</p>
+      <p class="term-example">深色模式、通知、Wi-Fi 開關</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'toggle')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Toggle Switch,標籤「夜間模式」,點擊立即生效並儲存到 localStorage。開啟時綠色,關閉時灰色,支援鍵盤空白鍵切換,符合 ARIA switch 規範。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="input" data-id="checkbox" data-keywords="checkbox 勾選 多選 核取">
+      <div class="term-header">
+        <span class="term-id">ID::0x02C</span>
+        <span class="term-tag">MULTI</span>
+      </div>
+      <div class="term-demo">
+        <div class="checkbox-demo">
+          <div class="cb-item checked" onclick="this.classList.toggle('checked')"><div class="cb-box"></div>升級 ICE 防火牆</div>
+          <div class="cb-item" onclick="this.classList.toggle('checked')"><div class="cb-box"></div>植入 Sandevistan</div>
+          <div class="cb-item checked" onclick="this.classList.toggle('checked')"><div class="cb-box"></div>強化反射神經</div>
+        </div>
+      </div>
+      <div class="term-zh">勾選框</div>
+      <div class="term-en">Checkbox</div>
+      <p class="term-def">可勾選或取消的方框,允許「多選」。常見於同意條款、多選清單、待辦事項。可以有第三態(indeterminate)表示「部分勾選」。</p>
+      <p class="term-example">同意條款、多標籤勾選、Todo</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'checkbox')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一組 Checkbox 列表,支援多選。父級 checkbox 控制全選/取消,子項全選時父級勾選,部分選時顯示 indeterminate 狀態。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="input" data-id="radio" data-keywords="radio 單選 圓鈕 選一">
+      <div class="term-header">
+        <span class="term-id">ID::0x02D</span>
+        <span class="term-tag warn">SINGLE</span>
+      </div>
+      <div class="term-demo">
+        <div class="radio-demo" data-radio-group>
+          <div class="rd-item checked" onclick="pickRadio(this)"><div class="rd-circle"></div>Solo / 獨行客</div>
+          <div class="rd-item" onclick="pickRadio(this)"><div class="rd-circle"></div>Netrunner / 網路潛行者</div>
+          <div class="rd-item" onclick="pickRadio(this)"><div class="rd-circle"></div>Techie / 技師</div>
+        </div>
+      </div>
+      <div class="term-zh">單選圓鈕</div>
+      <div class="term-en">Radio Button</div>
+      <p class="term-def">圓形的單選按鈕,一組裡只能選一個。命名源自老式收音機的預設台按鈕——按一個,其他自動彈起來。</p>
+      <p class="term-example">性別、付款方式、評分</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'radio')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一組 Radio Button,標題「選擇付款方式」。三個選項:信用卡、Apple Pay、Google Pay。一次只能選一個,選中項目有視覺強調,鍵盤上下可切換。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="input" data-id="dropdown" data-keywords="dropdown select 下拉 選單">
+      <div class="term-header">
+        <span class="term-id">ID::0x02E</span>
+        <span class="term-tag">SELECT</span>
+      </div>
+      <div class="term-demo">
+        <div class="dropdown-demo" data-dd>
+          <button class="dropdown-trigger" onclick="toggleDropdown(this)">
+            <span class="lbl">選擇義體部位</span>
+          </button>
+          <div class="dropdown-menu">
+            <div class="opt" onclick="pickDropdown(this,'神經系統')">神經系統</div>
+            <div class="opt" onclick="pickDropdown(this,'眼部植入')">眼部植入</div>
+            <div class="opt" onclick="pickDropdown(this,'手臂強化')">手臂強化</div>
+            <div class="opt" onclick="pickDropdown(this,'循環系統')">循環系統</div>
+          </div>
+        </div>
+      </div>
+      <div class="term-zh">下拉選單</div>
+      <div class="term-en">Dropdown · Select</div>
+      <p class="term-def">點擊後展開選項清單的控件。適合選項較多(5 個以上)但畫面空間有限的情境。可搜尋的版本叫 Combobox。</p>
+      <p class="term-example">國家選擇、排序、語言切換</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'dropdown')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Combobox(可搜尋的下拉選單),選項是國家列表。支援鍵盤導覽(↑↓ Enter Esc),輸入文字即時過濾選項,符合 ARIA combobox 規範。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="input" data-id="input" data-keywords="input text 輸入框 文字">
+      <div class="term-header">
+        <span class="term-id">ID::0x02F</span>
+        <span class="term-tag">TEXT</span>
+      </div>
+      <div class="term-demo">
+        <input class="input-demo" type="text" placeholder="// SEARCH NIGHT CITY..." oninput="if(this.value.length>2)showToast('搜尋中: '+this.value,'info')">
+      </div>
+      <div class="term-zh">輸入框</div>
+      <div class="term-en">Input · Text Field</div>
+      <p class="term-def">讓使用者輸入文字的單行輸入框。多行版本稱為 Textarea(文字區域)。常見變體:搜尋框(search)、密碼(password)、email、數字(number)。</p>
+      <p class="term-example">搜尋欄、email 輸入、帳號登入</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'input')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個搜尋輸入框,左側有 search 圖示,右側有清除按鈕(有內容時才顯示)。debounce 300ms 後觸發搜尋。focus 時邊框變色,error 狀態下方顯示紅色錯誤訊息。')">複製 prompt</button>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===== SECTION 03 - LAYOUT ===== -->
+<section class="section" id="layout">
+  <div class="section-head">
+    <div class="section-num">03</div>
+    <div class="titles">
+      <h2>LAYOUT.<span class="ny">FRAMEWORK</span></h2>
+      <div class="sub">// 結構與導覽元件 · 都能操作</div>
+    </div>
+    <div class="id">
+      DIR::/layout<br>
+      <span class="live">12 NODES · INTERACTIVE</span>
+    </div>
+  </div>
+
+  <div class="terms" id="termsLayout">
+
+    <article class="term" data-cat="layout" data-id="navbar" data-keywords="header navbar 頁首 導覽">
+      <div class="term-header">
+        <span class="term-id">ID::0x03A</span>
+        <span class="term-tag">TOP</span>
+      </div>
+      <div class="term-demo" style="padding:0.5rem">
+        <div class="navbar-demo">
+          <span class="logo">ARASAKA</span>
+          <div class="navlinks">
+            <a onclick="showToast('Home clicked','info')">HOME</a>
+            <a onclick="showToast('Products clicked','info')">PROD</a>
+            <a onclick="showToast('Contact clicked','info')">CON</a>
+          </div>
+        </div>
+      </div>
+      <div class="term-zh">頁首 / 導覽列</div>
+      <div class="term-en">Header · Navbar</div>
+      <p class="term-def">頁面最上方的橫條,放 logo、主導覽、搜尋、登入。常見變化:置頂(sticky)、滾動隱藏。</p>
+      <p class="term-example">網站頂部選單、App 的標題列</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'navbar')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 sticky navbar,左側 logo、中央導覽連結、右側搜尋與使用者頭像。向下滾動時隱藏、向上滾動時出現。手機版改成漢堡選單,點擊開啟側邊 Drawer。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="sidebar" data-keywords="sidebar 側邊欄 側欄">
+      <div class="term-header">
+        <span class="term-id">ID::0x03B</span>
+        <span class="term-tag">SIDE</span>
+      </div>
+      <div class="term-demo" style="padding:0.5rem">
+        <div class="sidebar-demo">
+          <div class="sidebar-side">
+            <div class="item active" onclick="pickSidebar(this)">▸ INBOX</div>
+            <div class="item" onclick="pickSidebar(this)">▸ SENT</div>
+            <div class="item" onclick="pickSidebar(this)">▸ DRAFT</div>
+            <div class="item" onclick="pickSidebar(this)">▸ TRASH</div>
+          </div>
+          <div class="sidebar-main" id="sidebarMain">> 顯示 INBOX 的內容</div>
+        </div>
+      </div>
+      <div class="term-zh">側邊欄</div>
+      <div class="term-en">Sidebar</div>
+      <p class="term-def">固定在左/右側的長條欄位,用於主導覽、檔案樹、章節清單。可摺疊收起(collapsible)。</p>
+      <p class="term-example">VS Code 檔案總管、Slack 頻道</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'sidebar')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個左側 Sidebar,寬 240px,內含使用者頭像、導覽連結、設定按鈕。支援摺疊到 64px 只剩圖示,手機版改成從左滑入的 Drawer。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="tabs" data-keywords="tabs 分頁 標籤 頁籤">
+      <div class="term-header">
+        <span class="term-id">ID::0x03C</span>
+        <span class="term-tag info">SWITCH</span>
+      </div>
+      <div class="term-demo">
+        <div class="tabs-demo">
+          <div class="tabs-nav">
+            <button class="tab-btn active" onclick="pickTab(this,'a')">PROFILE</button>
+            <button class="tab-btn" onclick="pickTab(this,'b')">STATS</button>
+            <button class="tab-btn" onclick="pickTab(this,'c')">INVENTORY</button>
+          </div>
+          <div class="tab-content" id="tabContent">> V — Mercenary from Night City</div>
+        </div>
+      </div>
+      <div class="term-zh">分頁標籤</div>
+      <div class="term-en">Tabs</div>
+      <p class="term-def">在同一頁面切換不同內容區塊的標籤列。命名源自實體檔案夾上的索引標。</p>
+      <p class="term-example">設定頁面的「個人/帳號/通知」</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'tabs')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Tabs 元件,三個分頁:「個人資料」、「安全設定」、「通知」。當前分頁底部有色條強調,內容區域切換時有淡入動畫,鍵盤左右可切換。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="breadcrumb" data-keywords="breadcrumb 麵包屑 路徑 階層">
+      <div class="term-header">
+        <span class="term-id">ID::0x03D</span>
+        <span class="term-tag">PATH</span>
+      </div>
+      <div class="term-demo">
+        <div class="breadcrumb-demo">
+          <a onclick="showToast('回到 HOME','info')">HOME</a>
+          <span class="sep">/</span>
+          <a onclick="showToast('回到 STORE','info')">STORE</a>
+          <span class="sep">/</span>
+          <a onclick="showToast('回到 WEAPONS','info')">WEAPONS</a>
+          <span class="sep">/</span>
+          <span class="current">SMART GUNS</span>
+        </div>
+      </div>
+      <div class="term-zh">麵包屑</div>
+      <div class="term-en">Breadcrumb</div>
+      <p class="term-def">顯示「你現在在哪一層」的階層導覽,通常用 / 或 › 分隔。命名來自童話《糖果屋》——撒麵包屑找路。</p>
+      <p class="term-example">電商分類路徑、檔案路徑</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'breadcrumb')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Breadcrumb 元件,顯示當前頁面的階層路徑。每一層除了最後一層都是可點擊連結,當前頁面用粗體標示。手機版自動折疊中間層級。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="accordion" data-keywords="accordion collapse 摺疊 收合">
+      <div class="term-header">
+        <span class="term-id">ID::0x03E</span>
+        <span class="term-tag">EXPAND</span>
+      </div>
+      <div class="term-demo">
+        <div class="accordion-demo">
+          <div class="acc-item">
+            <button class="acc-trigger" onclick="this.parentElement.classList.toggle('open')">什麼是 ICE?</button>
+            <div class="acc-content">ICE = Intrusion Countermeasures Electronics</div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-trigger" onclick="this.parentElement.classList.toggle('open')">什麼是 Netrunner?</button>
+            <div class="acc-content">擅長入侵網路與義體的駭客</div>
+          </div>
+        </div>
+      </div>
+      <div class="term-zh">摺疊面板</div>
+      <div class="term-en">Accordion · Collapse</div>
+      <p class="term-def">點擊標題可展開/收起內容的區塊。多個並列時通常一次只開一個(命名來自手風琴)。</p>
+      <p class="term-example">FAQ、設定的進階選項</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'accordion')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Accordion 元件,FAQ 用,可以單一展開模式(一次只開一個)或多重展開模式。展開時有平滑動畫,符合 ARIA disclosure 規範。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="carousel" data-keywords="carousel slider 輪播 走馬燈">
+      <div class="term-header">
+        <span class="term-id">ID::0x03F</span>
+        <span class="term-tag">SCROLL</span>
+      </div>
+      <div class="term-demo">
+        <div class="carousel-demo">
+          <div class="carousel-stage" id="carouselStage">ARASAKA</div>
+          <div class="carousel-dots">
+            <button class="carousel-dot active" onclick="pickCarousel(0)" data-c="ARASAKA"></button>
+            <button class="carousel-dot" onclick="pickCarousel(1)" data-c="MILITECH"></button>
+            <button class="carousel-dot" onclick="pickCarousel(2)" data-c="KIROSHI"></button>
+            <button class="carousel-dot" onclick="pickCarousel(3)" data-c="ZETATECH"></button>
+          </div>
+        </div>
+      </div>
+      <div class="term-zh">輪播圖</div>
+      <div class="term-en">Carousel · Slider</div>
+      <p class="term-def">水平捲動展示一系列內容(圖片、卡片)的元件。底部通常有分頁點(dot indicator)、左右箭頭、可自動播放(autoplay)。</p>
+      <p class="term-example">首頁 banner、產品圖、推薦商品</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'carousel')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Carousel 元件,輪播首頁 banner。每 5 秒自動切換,底部有 dot indicator,左右有箭頭。hover 時暫停自動播放,支援觸控滑動,使用 IntersectionObserver 暫停離畫面的輪播。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="card" data-keywords="card 卡片 容器">
+      <div class="term-header">
+        <span class="term-id">ID::0x03G</span>
+        <span class="term-tag">CONTAINER</span>
+      </div>
+      <div class="term-demo">
+        <div class="card-demo" onclick="showToast('卡片被點擊','info')">
+          <div class="ttl">⚡ MILITECH M-10AF LEXINGTON</div>
+          <div class="body">手槍 · 損傷 245 · €$ 2,400</div>
+        </div>
+      </div>
+      <div class="term-zh">卡片</div>
+      <div class="term-en">Card</div>
+      <p class="term-def">用陰影或邊框框起來、視覺上自成一塊的內容容器。常用於列表(grid of cards)。</p>
+      <p class="term-example">產品卡、文章預覽、Pinterest</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'card')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Product Card,包含縮圖、標題、描述、價格、加入購物車按鈕。整張卡可點擊進入詳情頁,hover 時有微妙的提升效果(translateY -2px + shadow)。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="button" data-keywords="button 按鈕 觸發 動作">
+      <div class="term-header">
+        <span class="term-id">ID::0x03H</span>
+        <span class="term-tag ok">ACTION</span>
+      </div>
+      <div class="term-demo">
+        <div class="button-demo">
+          <button class="btn-sample primary" onclick="showToast('PRIMARY','info')">PRIMARY</button>
+          <button class="btn-sample secondary" onclick="showToast('SECONDARY','info')">SECONDARY</button>
+          <button class="btn-sample ghost" onclick="showToast('GHOST','info')">GHOST</button>
+          <button class="btn-sample destructive" onclick="showToast('DESTRUCTIVE','error')">DESTRUCTIVE</button>
+        </div>
+      </div>
+      <div class="term-zh">按鈕</div>
+      <div class="term-en">Button</div>
+      <p class="term-def">觸發動作的元件。主要類型:Primary(主要,實心)、Secondary(次要,外框)、Ghost(透明,純文字)、Destructive(危險,如刪除)。</p>
+      <p class="term-example">送出、取消、刪除</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'button')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一組 Button 元件,涵蓋 4 種變體:primary / secondary / ghost / destructive,以及 3 種尺寸:sm / md / lg。每種都有 default / hover / active / disabled / loading 狀態。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="badge" data-keywords="badge chip tag 徽章 標籤">
+      <div class="term-header">
+        <span class="term-id">ID::0x03I</span>
+        <span class="term-tag danger">NOTIFY</span>
+      </div>
+      <div class="term-demo">
+        <div class="badge-demo" style="flex-direction:column">
+          <div style="display:flex;gap:0.8rem;align-items:center">
+            <div class="badge-icon">✉<span class="badge-num" id="badgeNum">3</span></div>
+            <button class="demo-trigger" style="font-size:0.6rem;padding:0.3rem 0.6rem" onclick="addBadge()">+1</button>
+            <button class="demo-trigger" style="font-size:0.6rem;padding:0.3rem 0.6rem;background:var(--magenta);color:#fff" onclick="clearBadge()">CLEAR</button>
+          </div>
+          <div class="chip-list" style="margin-top:0.5rem">
+            <span class="chip active" onclick="this.classList.toggle('active')">SOLO</span>
+            <span class="chip" onclick="this.classList.toggle('active')">NETRUNNER</span>
+            <span class="chip" onclick="this.classList.toggle('active')">TECHIE</span>
+          </div>
+        </div>
+      </div>
+      <div class="term-zh">徽章 / 標籤</div>
+      <div class="term-en">Badge · Chip · Tag</div>
+      <p class="term-def">小型標示元件。Badge 多用於數字(通知數),Chip/Tag 多用於分類標籤、過濾條件。Chip 通常可點擊切換,Tag 多為純展示。</p>
+      <p class="term-example">未讀紅點、文章標籤、篩選器</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'badge')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個通知 Badge,附在鈴鐺圖示右上角。數字 1-9 顯示實際數字,>=10 顯示「9+」,0 時隱藏整個 badge。背景紅色,白色數字,小尺寸。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="progress" data-keywords="progress 進度 bar">
+      <div class="term-header">
+        <span class="term-id">ID::0x03J</span>
+        <span class="term-tag">PROGRESS</span>
+      </div>
+      <div class="term-demo">
+        <div class="progress-demo" id="progressDemo">
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-text" id="progressText">0% · DOWNLOAD</div>
+          <button class="demo-trigger" style="margin-top:0.6rem;font-size:0.65rem;padding:0.3rem 0.7rem" onclick="runProgress()">▶ 開始下載</button>
+        </div>
+      </div>
+      <div class="term-zh">進度條</div>
+      <div class="term-en">Progress Bar</div>
+      <p class="term-def">顯示任務完成進度的橫條。確定型(知道百分比)或不確定型(只是動,代表處理中)。</p>
+      <p class="term-example">檔案上傳、影片載入、安裝</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'progress')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Progress Bar,顯示檔案上傳進度。確定型(0-100%)與不確定型(無限動畫)兩種模式。上方顯示檔名,右上角顯示百分比,完成時變綠色並淡出。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="spinner" data-keywords="spinner loader 載入 等待">
+      <div class="term-header">
+        <span class="term-id">ID::0x03K</span>
+        <span class="term-tag warn">LOAD</span>
+      </div>
+      <div class="term-demo">
+        <div class="spinner-demo">
+          <div class="spinner"></div>
+          <span class="label" id="spinnerLabel">JACKING IN...</span>
+        </div>
+      </div>
+      <div class="term-zh">載入指示器</div>
+      <div class="term-en">Spinner · Loader</div>
+      <p class="term-def">表示「系統正在處理」的旋轉動畫。變體:骨架屏(Skeleton Screen)— 灰色佔位元素,模擬內容的形狀。</p>
+      <p class="term-example">頁面載入、按鈕等待回應</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'spinner')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 Skeleton Screen,顯示為文章列表的灰色佔位元素。包含縮圖、標題(兩行)、副標題的形狀,有微妙的左右掃光動畫(shimmer effect)。')">複製 prompt</button>
+      </div>
+    </article>
+
+    <article class="term" data-cat="layout" data-id="fab" data-keywords="fab floating 浮動 動作鈕">
+      <div class="term-header">
+        <span class="term-id">ID::0x03L</span>
+        <span class="term-tag">FLOAT</span>
+      </div>
+      <div class="term-demo" style="padding:0.5rem">
+        <div class="fab-demo">
+          <div class="lines"><span></span><span></span><span></span></div>
+          <button class="fab-btn" onclick="showToast('新增訊息','info')">+</button>
+        </div>
+      </div>
+      <div class="term-zh">浮動動作鈕</div>
+      <div class="term-en">FAB · Floating Action Button</div>
+      <p class="term-def">浮在頁面右下角(或角落)的圓形按鈕,代表頁面的主要動作。Material Design 經典元件。</p>
+      <p class="term-example">Gmail 寫信、Twitter 發推、新增</p>
+      <div class="term-actions">
+        <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'fab')">標為已學</button>
+        <button class="term-action-btn" onclick="copyPrompt('做一個 FAB(Floating Action Button),固定在右下角,圓形 56x56px,藍色背景白色 + 號圖示。hover 時有提升效果,點擊展開 Speed Dial(3 個子按鈕扇形展開)。')">複製 prompt</button>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===== SECTION 04 - PROMPT ===== -->
+<section class="section prompt-section" id="prompt">
+  <div class="section-head">
+    <div class="section-num">04</div>
+    <div class="titles">
+      <h2>PROMPT.<span class="ny">PROTOCOL</span></h2>
+      <div class="sub">// 給 Claude 的精準指令協議 · 點按鈕複製範例</div>
+    </div>
+    <div class="id">
+      DIR::/protocol<br>
+      <span class="live">6 RULES LOADED</span>
+    </div>
+  </div>
+
+  <div class="prompt-grid">
+
+    <div class="principle">
+      <span class="principle-num">RULE 01</span>
+      <h3>用<span class="ny">對的名詞</span>取代「彈窗」</h3>
+      <p>「彈窗」在中文是模糊詞,涵蓋 Modal、Drawer、Toast、Popover 至少四種。直接說英文元件名,Claude 一次就懂。</p>
+      <div class="prompt-compare">
+        <div class="prompt-bad">幫我做個彈窗顯示成功訊息</div>
+        <div class="prompt-good">在右上角加一個 toast,顯示「儲存成功」,3 秒後自動消失</div>
+      </div>
+      <button class="copy-good" onclick="copyText(this,'在右上角加一個 toast,顯示「儲存成功」,3 秒後自動消失')">複製好 prompt</button>
+    </div>
+
+    <div class="principle">
+      <span class="principle-num">RULE 02</span>
+      <h3>指定<span class="ny">狀態與行為</span></h3>
+      <p>UI 元件有多種狀態:default / hover / active / disabled / loading。明確說明你要哪些狀態,以及點擊後會發生什麼。</p>
+      <div class="prompt-compare">
+        <div class="prompt-bad">做一個提交按鈕</div>
+        <div class="prompt-good">primary button,文字「送出」。disabled 時變灰不可點;點擊變 loading(顯示 spinner),完成後變綠色打勾</div>
+      </div>
+      <button class="copy-good" onclick="copyText(this,'primary button,文字「送出」。disabled 時變灰不可點;點擊變 loading(顯示 spinner),完成後變綠色打勾')">複製好 prompt</button>
+    </div>
+
+    <div class="principle">
+      <span class="principle-num">RULE 03</span>
+      <h3>標明<span class="ny">位置、尺寸、邊距</span></h3>
+      <p>用具體單位(px、rem、%)和位置(top-right、fixed bottom、sticky)。Claude 對視覺的想像需要錨點。</p>
+      <div class="prompt-compare">
+        <div class="prompt-bad">在側邊放一個側邊欄</div>
+        <div class="prompt-good">左側固定 240px 寬的 sidebar,內容垂直捲動,底部固定一個 64px 高的使用者資訊區</div>
+      </div>
+      <button class="copy-good" onclick="copyText(this,'左側固定 240px 寬的 sidebar,內容垂直捲動,底部固定一個 64px 高的使用者資訊區')">複製好 prompt</button>
+    </div>
+
+    <div class="principle">
+      <span class="principle-num">RULE 04</span>
+      <h3>提供<span class="ny">風格參考</span></h3>
+      <p>說明設計風格(brutalist、minimal、editorial、glassmorphism),或舉產品為例(像 Linear、像 Notion)。比形容詞更精準。</p>
+      <div class="prompt-compare">
+        <div class="prompt-bad">設計感一點、好看一點</div>
+        <div class="prompt-good">Cyberpunk 風格,黑底配青色螢光,等寬字 + Orbitron 標題,參考 Cyberpunk 2077 的 UI</div>
+      </div>
+      <button class="copy-good" onclick="copyText(this,'Cyberpunk 風格,黑底配青色螢光,等寬字 + Orbitron 標題,參考 Cyberpunk 2077 的 UI')">複製好 prompt</button>
+    </div>
+
+    <div class="principle">
+      <span class="principle-num">RULE 05</span>
+      <h3>聲明<span class="ny">技術棧與限制</span></h3>
+      <p>框架(React/Vue/HTML)、UI 庫(shadcn、Tailwind)、瀏覽器相容性、無障礙(a11y)、dark mode 需求——前置說清楚。</p>
+      <div class="prompt-compare">
+        <div class="prompt-bad">幫我做一個下拉選單</div>
+        <div class="prompt-good">React + TS + Tailwind,做可搜尋的 combobox,支援鍵盤導覽(↑↓ Enter Esc),符合 ARIA 規範</div>
+      </div>
+      <button class="copy-good" onclick="copyText(this,'React + TS + Tailwind,做可搜尋的 combobox,支援鍵盤導覽(↑↓ Enter Esc),符合 ARIA 規範')">複製好 prompt</button>
+    </div>
+
+    <div class="principle">
+      <span class="principle-num">RULE 06</span>
+      <h3>展示<span class="ny">內容範例</span></h3>
+      <p>具體的資料、文字、圖片描述能讓 Claude 一次到位。不要只說「卡片列表」,給出實際的卡片內容。</p>
+      <div class="prompt-compare">
+        <div class="prompt-bad">做一組產品卡片</div>
+        <div class="prompt-good">3 張產品卡並排,每張含縮圖、商品名(粗體 18px)、價格(NT$1,280,青色)、「加入購物車」按鈕。資料用:咖啡豆/馬克杯/濾紙</div>
+      </div>
+      <button class="copy-good" onclick="copyText(this,'3 張產品卡並排,每張含縮圖、商品名(粗體 18px)、價格(NT$1,280,青色)、「加入購物車」按鈕。資料用:咖啡豆/馬克杯/濾紙')">複製好 prompt</button>
+    </div>
+
+  </div>
+
+  <div class="template">
+    <div class="template-header">
+      <span>// PROMPT_TEMPLATE.exe</span>
+      <button onclick="copyTemplate()">⧉ COPY TEMPLATE</button>
+    </div>
+    <div class="template-body">
+      <h3>萬用 Prompt 模板</h3>
+<pre id="templateBlock"><span class="field">【元件名稱】</span> <span class="var">明確的英文 UI 詞彙(Modal / Drawer / Toast...)</span>
+
+<span class="field">【用途】</span> <span class="var">這個元件解決什麼問題?觸發時機?</span>
+
+<span class="field">【視覺】</span>
+  <span class="comment">- 位置:</span><span class="var">top-right / center / fixed bottom...</span>
+  <span class="comment">- 尺寸:</span><span class="var">寬 400px,高自適應內容</span>
+  <span class="comment">- 風格:</span><span class="var">minimal / brutalist / cyberpunk...</span>
+  <span class="comment">- 顏色:</span><span class="var">主色 #00f0ff,背景 #05060a</span>
+
+<span class="field">【內容】</span>
+  <span class="comment">- 標題:</span><span class="var">"確認刪除"</span>
+  <span class="comment">- 內文:</span><span class="var">"此操作無法復原"</span>
+  <span class="comment">- 按鈕:</span><span class="var">主要「刪除」(紅)、次要「取消」</span>
+
+<span class="field">【狀態與互動】</span>
+  <span class="comment">- 狀態:</span><span class="var">default / hover / loading / disabled</span>
+  <span class="comment">- 點擊主按鈕後:</span><span class="var">spinner → toast → 關閉</span>
+  <span class="comment">- 按 Esc / 點背景:</span><span class="var">關閉</span>
+
+<span class="field">【技術】</span>
+  <span class="comment">- 框架:</span><span class="var">React 18 + TypeScript</span>
+  <span class="comment">- 樣式:</span><span class="var">Tailwind CSS</span>
+  <span class="comment">- 無障礙:</span><span class="var">符合 WAI-ARIA dialog 規範</span>
+
+<span class="field">【參考】</span> <span class="var">類似 Linear 的刪除確認框</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 05 - CLI ===== -->
+<section class="section cli-section" id="cli">
+  <div class="section-head">
+    <div class="section-num">05</div>
+    <div class="titles">
+      <h2>CLAUDE.<span class="ny">CODE_CLI</span></h2>
+      <div class="sub">// 每個程式碼區塊都能一鍵複製</div>
+    </div>
+    <div class="id">
+      DIR::/cli<br>
+      <span class="live">CLICK COPY · TRY TERMINAL ↓</span>
+    </div>
+  </div>
+
+  <div class="cli-grid">
+
+    <div class="cli-card">
+      <div class="cli-card-header"><span class="num">01</span> 安裝 &amp; 登入</div>
+      <div class="cli-card-body">
+        <p>Claude Code 是 Anthropic 的官方終端機編碼代理。推薦原生二進位,不需 Node.js。</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 推薦:原生二進位(macOS / Linux)</span>
+<span class="k">curl</span> -fsSL https://claude.ai/install.sh | <span class="k">bash</span>
+
+<span class="c"># macOS Homebrew</span>
+<span class="k">brew</span> install --cask claude-code
+
+<span class="c"># 登入(瀏覽器)</span>
+claude auth login
+
+<span class="c"># 用 Anthropic Console 計費</span>
+claude auth login <span class="f">--console</span>
+
+<span class="c"># CI 環境用長效 token</span>
+claude setup-token</pre>
+        <ul>
+          <li>原生二進位最穩,不需 Node.js</li>
+          <li>本機開發用訂閱登入即可</li>
+          <li>CI 用 <code>setup-token</code> 生成 token</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card">
+      <div class="cli-card-header"><span class="num">02</span> 啟動方式</div>
+      <div class="cli-card-body">
+        <p>互動模式適合來回對話,印出模式(<code>-p</code>)適合腳本與一次性查詢。</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 互動模式</span>
+claude
+
+<span class="c"># 帶第一個問題進入</span>
+claude <span class="s">"解釋這個專案的架構"</span>
+
+<span class="c"># 一次性查詢(headless)</span>
+claude <span class="f">-p</span> <span class="s">"這個 function 在做什麼?"</span>
+
+<span class="c"># 從 stdin 接收</span>
+<span class="k">git</span> diff | claude <span class="f">-p</span> <span class="s">"幫這份 diff 寫 commit message"</span>
+
+<span class="c"># 接續最近對話</span>
+claude <span class="f">-c</span>
+
+<span class="c"># 用名稱恢復 session</span>
+claude <span class="f">--resume</span> <span class="s">"auth-refactor"</span></pre>
+        <ul>
+          <li><code>-p</code> = print mode,適合腳本與 pipe</li>
+          <li><code>-c</code> = 接續當前目錄最近對話</li>
+          <li><code>-r/--resume</code> = 選擇歷史 session</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card">
+      <div class="cli-card-header"><span class="num">03</span> 模型 &amp; 思考強度</div>
+      <div class="cli-card-body">
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 指定模型</span>
+claude <span class="f">--model</span> <span class="s">sonnet</span>
+claude <span class="f">--model</span> <span class="s">opus</span>
+claude <span class="f">--model</span> <span class="s">claude-sonnet-4-6</span>
+
+<span class="c"># 思考強度(low/medium/high/xhigh/max)</span>
+claude <span class="f">--effort</span> <span class="s">high</span>
+
+<span class="c"># 主模型過載時自動 fallback</span>
+claude <span class="f">-p</span> <span class="f">--fallback-model</span> <span class="s">sonnet</span> <span class="s">"query"</span>
+
+<span class="c"># 對話中切換模型</span>
+> <span class="f">/model</span> opus</pre>
+        <ul>
+          <li>複雜重構用 <code>opus</code> + <code>--effort high</code></li>
+          <li>日常編輯用 <code>sonnet</code>,速度快</li>
+          <li>fallback 只在 print mode 與背景任務生效</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card">
+      <div class="cli-card-header"><span class="num">04</span> 權限模式</div>
+      <div class="cli-card-body">
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># default - 每個敏感動作都詢問</span>
+claude <span class="f">--permission-mode</span> <span class="s">default</span>
+
+<span class="c"># plan - 規劃模式(只想不做)</span>
+claude <span class="f">--permission-mode</span> <span class="s">plan</span>
+
+<span class="c"># acceptEdits - 自動接受編輯</span>
+claude <span class="f">--permission-mode</span> <span class="s">acceptEdits</span>
+
+<span class="c"># auto - 智慧自動判斷</span>
+claude <span class="f">--permission-mode</span> <span class="s">auto</span>
+
+<span class="c"># bypass - 全部繞過(沙箱限定)</span>
+claude <span class="f">--dangerously-skip-permissions</span></pre>
+        <ul>
+          <li>不熟悉專案先用 <code>plan</code> 模式</li>
+          <li>互動中按 <code>Shift+Tab</code> 切換模式</li>
+          <li><code>bypass</code> 只在 CI 或 sandbox 用</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card">
+      <div class="cli-card-header"><span class="num">05</span> 工具控制</div>
+      <div class="cli-card-body">
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 只允許特定工具</span>
+claude <span class="f">--tools</span> <span class="s">"Read,Edit,Bash"</span>
+
+<span class="c"># 預先核准某些指令</span>
+claude <span class="f">--allowedTools</span> <span class="s">"Bash(git log *)"</span> <span class="s">"Read"</span>
+
+<span class="c"># 禁用特定工具</span>
+claude <span class="f">--disallowedTools</span> <span class="s">"Bash(rm *)"</span>
+
+<span class="c"># 新增可讀寫目錄</span>
+claude <span class="f">--add-dir</span> <span class="s">../shared-lib</span>
+
+<span class="c"># 完全唯讀(觀察模式)</span>
+claude <span class="f">--tools</span> <span class="s">"Read,Grep,Glob"</span></pre>
+        <ul>
+          <li>code review 場景只給 Read 工具</li>
+          <li>用 <code>Bash(指令 *)</code> 語法精細控制</li>
+          <li>單一危險指令用黑名單</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card">
+      <div class="cli-card-header"><span class="num">06</span> 輸出格式(腳本化)</div>
+      <div class="cli-card-body">
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># JSON 輸出</span>
+claude <span class="f">-p</span> <span class="f">--output-format</span> <span class="s">json</span> <span class="s">"query"</span>
+
+<span class="c"># 串流 JSON(即時)</span>
+claude <span class="f">-p</span> <span class="f">--output-format</span> <span class="s">stream-json</span> <span class="f">--verbose</span>
+
+<span class="c"># 用 JSON Schema 約束輸出</span>
+claude <span class="f">-p</span> <span class="f">--json-schema</span> <span class="s">'{...}'</span> <span class="s">"query"</span>
+
+<span class="c"># 最大成本上限(防爆預算)</span>
+claude <span class="f">-p</span> <span class="f">--max-budget-usd</span> <span class="s">5.00</span>
+
+<span class="c"># 最大來回次數</span>
+claude <span class="f">-p</span> <span class="f">--max-turns</span> <span class="s">3</span></pre>
+        <ul>
+          <li>CI/CD 用 <code>json</code> 取得結構化結果</li>
+          <li><code>--max-budget-usd</code> 防無限執行</li>
+          <li><code>--json-schema</code> 保證輸出可 parse</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card">
+      <div class="cli-card-header"><span class="num">07</span> 斜線指令(互動內)</div>
+      <div class="cli-card-body">
+        <p>在 <code>claude</code> 互動模式裡看到 <code>&gt;</code> 提示符後輸入。</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 上下文管理</span>
+> <span class="f">/compact</span>           <span class="c">// 壓縮歷史</span>
+> <span class="f">/context</span>           <span class="c">// 查看 context 用量</span>
+> <span class="f">/clear</span>             <span class="c">// 清空對話</span>
+> <span class="f">/cost</span>              <span class="c">// 查看累計花費</span>
+
+<span class="c"># 工作目錄 &amp; 設定</span>
+> <span class="f">/add-dir</span> <span class="s">../lib</span>
+> <span class="f">/init</span>              <span class="c">// 產生 CLAUDE.md</span>
+> <span class="f">/memory</span>            <span class="c">// 編輯記憶</span>
+> <span class="f">/review</span>            <span class="c">// 對最近變更 review</span>
+
+<span class="c"># 模型 &amp; 目標</span>
+> <span class="f">/model</span> opus
+> <span class="f">/goal</span> <span class="s">"修復測試直到全綠"</span></pre>
+        <ul>
+          <li><code>/compact</code> 在 context 警告時用</li>
+          <li><code>/goal</code> 適合有明確完成條件的任務</li>
+          <li>自訂指令放 <code>.claude/commands/</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card">
+      <div class="cli-card-header"><span class="num">08</span> 背景任務</div>
+      <div class="cli-card-body">
+        <p>長時間任務丟背景,前景繼續工作。</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 啟動背景任務</span>
+claude <span class="f">--bg</span> <span class="s">"重構整個 auth 模組"</span>
+
+<span class="c"># 列出全部背景任務</span>
+claude agents
+
+<span class="c"># 看任務的即時 log</span>
+claude logs <span class="s">7c5dcf5d</span>
+
+<span class="c"># 連接到任務終端</span>
+claude attach <span class="s">7c5dcf5d</span>
+
+<span class="c"># 停止 / 重啟</span>
+claude stop <span class="s">7c5dcf5d</span>
+claude respawn <span class="s">7c5dcf5d</span></pre>
+        <ul>
+          <li>大任務丟背景,前景繼續寫 code</li>
+          <li><code>respawn --all</code> 換版本後一次重啟</li>
+          <li>互動內 <code>/agents</code> 開監控面板</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TERMINAL SIMULATOR ===== -->
+  <div class="terminal-sim" id="terminal">
+    <div class="terminal-header">
+      <span>~/projects/night-city ▸ claude</span>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+    <div class="terminal-body" id="terminalBody">
+<div><span class="prompt">$</span> <span class="cmd">claude --version</span></div>
+<div class="out">Claude Code v2.077 (interactive simulator)</div>
+<div class="out">這是模擬器,讓你不裝 Claude Code 也能練習指令。</div>
+<div class="out">點下方按鈕快速貼指令,或直接打字。輸入 <span style="color:var(--yellow)">help</span> 看可用指令。</div>
+<div><span class="prompt">$</span> <span class="cursor"></span></div>
+    </div>
+    <div class="terminal-quick">
+      <button onclick="termFill('claude --help')">--help</button>
+      <button onclick="termFill('claude -p \"explain this function\"')">-p print</button>
+      <button onclick="termFill('claude --model opus')">--model opus</button>
+      <button onclick="termFill('claude --permission-mode plan')">--permission-mode plan</button>
+      <button onclick="termFill('claude -c')">-c continue</button>
+      <button onclick="termFill('/compact')">/compact</button>
+      <button onclick="termFill('/init')">/init</button>
+      <button onclick="termFill('/cost')">/cost</button>
+      <button onclick="termFill('claude --bg \"refactor auth\"')">--bg</button>
+      <button onclick="termFill('clear')">clear</button>
+    </div>
+    <div class="terminal-input">
+      <span class="ps">$</span>
+      <input type="text" id="termInput" placeholder="輸入指令,按 Enter 執行..." onkeydown="if(event.key==='Enter')termRun(this.value)">
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 06 - CHEATSHEET ===== -->
+<section class="section" id="cheat">
+  <div class="section-head">
+    <div class="section-num">06</div>
+    <div class="titles">
+      <h2>QUICK.<span class="ny">REFERENCE</span></h2>
+      <div class="sub">// 速查表 · 列印貼螢幕邊</div>
+    </div>
+    <div class="id">
+      DIR::/cheatsheet<br>
+      <span class="live">PRINT READY</span>
+    </div>
+  </div>
+
+  <div class="template" style="max-width:1400px">
+    <div class="template-header">
+      <span>// CHEATSHEET.exe v2.077</span>
+      <button onclick="copyCheat()">⧉ COPY ALL</button>
+    </div>
+    <div class="template-body">
+<pre id="cheatBlock"><span class="field">━━━ 啟動 ━━━</span>
+<span class="comment">claude</span>                          <span class="var">啟動互動模式</span>
+<span class="comment">claude "問題"</span>                   <span class="var">帶問題進入</span>
+<span class="comment">claude -p "問題"</span>                <span class="var">一次性查詢(headless)</span>
+<span class="comment">claude -c</span>                       <span class="var">接續最近對話</span>
+<span class="comment">claude -r [名稱]</span>                <span class="var">恢復特定 session</span>
+<span class="comment">claude -w 分支名</span>                <span class="var">在隔離 worktree 開啟</span>
+<span class="comment">claude --bg "任務"</span>               <span class="var">背景執行</span>
+
+<span class="field">━━━ 模型 &amp; 強度 ━━━</span>
+<span class="comment">--model sonnet | opus</span>            <span class="var">切換模型</span>
+<span class="comment">--effort low|medium|high|max</span>     <span class="var">思考強度</span>
+<span class="comment">--fallback-model sonnet</span>          <span class="var">主模型過載時備援</span>
+
+<span class="field">━━━ 權限 ━━━</span>
+<span class="comment">--permission-mode plan</span>           <span class="var">只規劃不執行</span>
+<span class="comment">--permission-mode acceptEdits</span>    <span class="var">自動接受編輯</span>
+<span class="comment">--permission-mode auto</span>           <span class="var">智慧自動判斷</span>
+<span class="comment">--dangerously-skip-permissions</span>   <span class="var">全部繞過(沙箱限定)</span>
+
+<span class="field">━━━ 工具控制 ━━━</span>
+<span class="comment">--tools "Read,Edit,Bash"</span>         <span class="var">限制可用工具</span>
+<span class="comment">--allowedTools "Bash(git *)"</span>     <span class="var">預先允許</span>
+<span class="comment">--disallowedTools "Bash(rm *)"</span>   <span class="var">禁用</span>
+<span class="comment">--add-dir ../lib</span>                 <span class="var">新增可存取目錄</span>
+
+<span class="field">━━━ 輸出 ━━━</span>
+<span class="comment">--output-format json</span>             <span class="var">JSON 輸出</span>
+<span class="comment">--output-format stream-json</span>      <span class="var">串流 JSON</span>
+<span class="comment">--json-schema '...'</span>              <span class="var">用 schema 約束</span>
+<span class="comment">--max-budget-usd 5.00</span>            <span class="var">最大花費</span>
+<span class="comment">--max-turns 5</span>                    <span class="var">最大來回</span>
+
+<span class="field">━━━ 系統提示 ━━━</span>
+<span class="comment">--append-system-prompt "規則"</span>     <span class="var">追加</span>
+<span class="comment">--append-system-prompt-file 檔</span>    <span class="var">追加檔案</span>
+<span class="comment">--system-prompt "完整提示"</span>        <span class="var">完全覆寫</span>
+<span class="comment">--agent reviewer</span>                 <span class="var">指定子代理</span>
+
+<span class="field">━━━ 互動內斜線指令 ━━━</span>
+<span class="comment">/compact [重點]</span>                  <span class="var">壓縮對話歷史</span>
+<span class="comment">/context</span>                          <span class="var">查看用量</span>
+<span class="comment">/clear</span>                            <span class="var">清空對話</span>
+<span class="comment">/cost</span>                             <span class="var">顯示花費</span>
+<span class="comment">/model [名稱]</span>                    <span class="var">切換模型</span>
+<span class="comment">/add-dir 路徑</span>                    <span class="var">新增工作目錄</span>
+<span class="comment">/init</span>                             <span class="var">產生 CLAUDE.md</span>
+<span class="comment">/memory</span>                           <span class="var">編輯記憶</span>
+<span class="comment">/review</span>                           <span class="var">review 最近變更</span>
+<span class="comment">/goal "完成條件"</span>                  <span class="var">自主迭代直到達標</span>
+<span class="comment">/rename 新名稱</span>                   <span class="var">重新命名 session</span>
+<span class="comment">/agents</span>                           <span class="var">背景任務監控</span>
+<span class="comment">/quit | /exit</span>                    <span class="var">結束對話</span>
+
+<span class="field">━━━ 背景任務 ━━━</span>
+<span class="comment">claude agents</span>                    <span class="var">列出全部</span>
+<span class="comment">claude logs &lt;id&gt;</span>                 <span class="var">查看輸出</span>
+<span class="comment">claude attach &lt;id&gt;</span>               <span class="var">連接任務</span>
+<span class="comment">claude stop &lt;id&gt;</span>                 <span class="var">停止</span>
+<span class="comment">claude respawn &lt;id&gt;</span>              <span class="var">重啟</span>
+
+<span class="field">━━━ 鍵盤快捷鍵 ━━━</span>
+<span class="comment">Shift + Tab</span>                      <span class="var">切換權限模式</span>
+<span class="comment">Esc</span>                              <span class="var">中斷回應</span>
+<span class="comment">Ctrl + C</span>                         <span class="var">中斷指令</span>
+<span class="comment">Ctrl + D</span>                         <span class="var">退出 session</span>
+<span class="comment">Ctrl + L</span>                         <span class="var">清空螢幕</span>
+<span class="comment">↑ / ↓</span>                           <span class="var">瀏覽歷史</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p class="quote">
+    "精準的<span class="hl">詞彙</span>,是與 AI 溝通的<br>
+    第一性原理。"
+  </p>
+  <div class="progress-summary">
+    LEARNING PROGRESS · <span id="progressNum">0 / 24</span>
+    <div class="bar"><div class="bar-fill" id="learnBar"></div></div>
+    <button class="reset-btn" onclick="resetProgress()">// RESET ALL</button>
+  </div>
+  <div class="colophon">
+    <span class="c">UI://GLOSSARY.SYS</span> · INTERACTIVE EDITION v3 · 2077<br>
+    SET IN ORBITRON &amp; RAJDHANI &amp; SHARE TECH MONO<br>
+    // END OF FILE //
+  </div>
+</footer>
+
+<script>
+/* ===== SCROLL PROGRESS ===== */
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const scrolled = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('scrollProgress').style.width = scrolled + '%';
+});
+
+/* ===== STICKY NAV ACTIVE SECTION ===== */
+const navLinks = document.querySelectorAll('.sticky-nav .links a');
+const sections = ['overlay','input','layout','prompt','cli','cheat'].map(id => document.getElementById(id));
+window.addEventListener('scroll', () => {
+  const y = window.scrollY + 120;
+  let active = sections[0]?.id;
+  sections.forEach(s => { if (s && s.offsetTop <= y) active = s.id; });
+  navLinks.forEach(a => {
+    if (a.getAttribute('href') === '#' + active) a.classList.add('active');
+    else a.classList.remove('active');
+  });
+});
+
+/* ===== TOAST ===== */
+function showToast(msg, type) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+/* ===== MODAL ===== */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function confirmDelete() {
+  closeModal('modalDemo');
+  showToast('已刪除', 'error');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+    closeDrawer();
+    closeSheet();
+    closeAllPopovers();
+  }
+});
+document.getElementById('modalDemo').addEventListener('click', e => {
+  if (e.target.id === 'modalDemo') closeModal('modalDemo');
+});
+
+/* ===== DRAWER ===== */
+function openDrawer() {
+  document.getElementById('drawerBackdrop').classList.add('open');
+  document.getElementById('drawerPanel').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawerBackdrop').classList.remove('open');
+  document.getElementById('drawerPanel').classList.remove('open');
+}
+
+/* ===== BOTTOM SHEET ===== */
+function openSheet() {
+  document.getElementById('sheetBackdrop').classList.add('open');
+  document.getElementById('sheetPanel').classList.add('open');
+}
+function closeSheet() {
+  document.getElementById('sheetBackdrop').classList.remove('open');
+  document.getElementById('sheetPanel').classList.remove('open');
+}
+function pickShare(name) {
+  closeSheet();
+  showToast('分享到 ' + name, 'info');
+}
+
+/* ===== POPOVER ===== */
+function togglePopover(e, btn) {
+  e.stopPropagation();
+  const p = btn.parentElement.querySelector('[data-popover]');
+  const isOpen = p.classList.contains('open');
+  closeAllPopovers();
+  if (!isOpen) p.classList.add('open');
+}
+function closeAllPopovers() {
+  document.querySelectorAll('[data-popover].open').forEach(p => p.classList.remove('open'));
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.popover-wrap')) closeAllPopovers();
+});
+
+/* ===== TOGGLE ===== */
+function toggleSwitch(el) {
+  el.classList.toggle('on');
+  const status = el.parentElement.querySelector('.status');
+  if (el.classList.contains('on')) {
+    status.textContent = 'ON';
+    status.classList.add('on');
+  } else {
+    status.textContent = 'OFF';
+    status.classList.remove('on');
+  }
+}
+
+/* ===== RADIO ===== */
+function pickRadio(el) {
+  el.parentElement.querySelectorAll('.rd-item').forEach(i => i.classList.remove('checked'));
+  el.classList.add('checked');
+}
+
+/* ===== DROPDOWN ===== */
+function toggleDropdown(btn) {
+  btn.parentElement.classList.toggle('open');
+}
+function pickDropdown(opt, val) {
+  const dd = opt.closest('.dropdown-demo');
+  dd.querySelector('.lbl').textContent = val;
+  dd.classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dropdown-demo')) {
+    document.querySelectorAll('.dropdown-demo.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+/* ===== TABS ===== */
+const tabContents = {
+  a: '> V — Mercenary from Night City',
+  b: '> STR 15 · REF 14 · INT 18 · TECH 12 · COOL 16',
+  c: '> Mantis Blades · Smart Pistol · Cyberdeck'
+};
+function pickTab(btn, id) {
+  btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tabContent').textContent = tabContents[id];
+}
+
+/* ===== SIDEBAR ===== */
+function pickSidebar(el) {
+  el.parentElement.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sidebarMain').textContent = '> 顯示 ' + el.textContent.replace('▸ ','') + ' 的內容';
+}
+
+/* ===== CAROUSEL ===== */
+function pickCarousel(idx) {
+  const dots = document.querySelectorAll('.carousel-dot');
+  dots.forEach(d => d.classList.remove('active'));
+  dots[idx].classList.add('active');
+  document.getElementById('carouselStage').textContent = dots[idx].dataset.c;
+}
+
+/* ===== PROGRESS ===== */
+function runProgress() {
+  const fill = document.getElementById('progressFill');
+  const txt = document.getElementById('progressText');
+  let v = 0;
+  fill.style.width = '0%';
+  const iv = setInterval(() => {
+    v += Math.random() * 8 + 2;
+    if (v >= 100) { v = 100; clearInterval(iv); txt.textContent = '100% · COMPLETE'; }
+    else { txt.textContent = Math.round(v) + '% · DOWNLOAD'; }
+    fill.style.width = v + '%';
+  }, 100);
+}
+
+/* ===== BADGE ===== */
+let badgeCount = 3;
+function addBadge() {
+  badgeCount++;
+  const el = document.getElementById('badgeNum');
+  el.textContent = badgeCount > 9 ? '9+' : badgeCount;
+  el.style.display = '';
+}
+function clearBadge() {
+  badgeCount = 0;
+  const el = document.getElementById('badgeNum');
+  el.style.display = 'none';
+}
+
+/* ===== LEARN TOGGLE & PROGRESS ===== */
+const STORAGE_KEY = 'ui-glossary-v3-learned';
+function getLearned() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+function saveLearned(arr) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); } catch (e) {}
+}
+function toggleLearn(btn, id) {
+  const learned = getLearned();
+  const term = btn.closest('.term');
+  const idx = learned.indexOf(id);
+  if (idx >= 0) {
+    learned.splice(idx, 1);
+    term.classList.remove('learned');
+    btn.classList.remove('is-learned');
+    btn.textContent = '標為已學';
+    showToast('已取消標記', 'info');
+  } else {
+    learned.push(id);
+    term.classList.add('learned');
+    btn.classList.add('is-learned');
+    btn.textContent = '✓ 已學會';
+    showToast('已標記為學會', 'success');
+  }
+  saveLearned(learned);
+  updateProgress();
+}
+function updateProgress() {
+  const learned = getLearned();
+  const total = document.querySelectorAll('.term').length;
+  document.getElementById('progressNum').textContent = learned.length + ' / ' + total;
+  document.getElementById('learnBar').style.width = (learned.length / total * 100) + '%';
+}
+function resetProgress() {
+  if (!confirm('確定要重設所有學習進度?')) return;
+  saveLearned([]);
+  document.querySelectorAll('.term.learned').forEach(t => t.classList.remove('learned'));
+  document.querySelectorAll('.learn-toggle').forEach(b => {
+    b.classList.remove('is-learned');
+    b.textContent = '標為已學';
+  });
+  updateProgress();
+  showToast('已重設', 'warn');
+}
+function restoreLearned() {
+  const learned = getLearned();
+  learned.forEach(id => {
+    const term = document.querySelector('.term[data-id="' + id + '"]');
+    if (term) {
+      term.classList.add('learned');
+      const btn = term.querySelector('.learn-toggle');
+      if (btn) {
+        btn.classList.add('is-learned');
+        btn.textContent = '✓ 已學會';
+      }
+    }
+  });
+  updateProgress();
+}
+
+/* ===== COPY UTILITIES ===== */
+function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+}
+function copyPrompt(text) {
+  copyToClipboard(text).then(() => showToast('Prompt 已複製', 'info'));
+}
+function copyText(btn, text) {
+  copyToClipboard(text).then(() => {
+    btn.textContent = '✓ 已複製';
+    btn.classList.add('done');
+    setTimeout(() => {
+      btn.textContent = '複製好 prompt';
+      btn.classList.remove('done');
+    }, 1800);
+  });
+}
+function copyPre(btn) {
+  const pre = btn.parentElement;
+  const clone = pre.cloneNode(true);
+  clone.querySelector('.copy-btn')?.remove();
+  copyToClipboard(clone.textContent.trim()).then(() => {
+    btn.textContent = '✓ COPIED';
+    btn.classList.add('done');
+    setTimeout(() => {
+      btn.textContent = '⧉ COPY';
+      btn.classList.remove('done');
+    }, 1500);
+  });
+}
+function copyTemplate() {
+  const text = document.getElementById('templateBlock').textContent;
+  copyToClipboard(text).then(() => showToast('模板已複製,請貼到 Claude', 'success'));
+}
+function copyCheat() {
+  const text = document.getElementById('cheatBlock').textContent;
+  copyToClipboard(text).then(() => showToast('速查表已複製', 'success'));
+}
+
+/* ===== SEARCH & FILTER ===== */
+let currentFilter = 'all';
+const searchInput = document.getElementById('searchInput');
+const filterBtns = document.querySelectorAll('.filter-btn');
+
+function applyFilter() {
+  const q = (searchInput.value || '').toLowerCase().trim();
+  const learned = getLearned();
+  let visible = 0;
+  document.querySelectorAll('.term').forEach(term => {
+    const cat = term.dataset.cat;
+    const id = term.dataset.id;
+    const kw = (term.dataset.keywords || '').toLowerCase();
+    const txt = term.textContent.toLowerCase();
+
+    let okCat = true;
+    if (currentFilter === 'learned') okCat = learned.includes(id);
+    else if (currentFilter !== 'all') okCat = (cat === currentFilter);
+
+    let okText = !q || kw.includes(q) || txt.includes(q);
+
+    if (okCat && okText) {
+      term.classList.remove('hidden');
+      visible++;
+    } else {
+      term.classList.add('hidden');
+    }
+  });
+  document.getElementById('filterCounter').textContent = '// ' + visible + ' / ' + document.querySelectorAll('.term').length;
+}
+searchInput.addEventListener('input', applyFilter);
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilter();
+  });
+});
+
+/* ===== TERMINAL SIMULATOR ===== */
+const TERM_RESPONSES = {
+  'help': [
+    'Available simulated commands:',
+    '  claude --help          顯示官方說明',
+    '  claude --version       顯示版本',
+    '  claude -p "問題"       一次性查詢',
+    '  claude -c              接續對話',
+    '  claude --model opus    指定模型',
+    '  claude --permission-mode plan',
+    '  claude --bg "任務"     背景執行',
+    '  /compact /init /cost   斜線指令',
+    '  clear                  清空螢幕',
+    '注意:這是模擬器,不會真的執行。'
+  ],
+  'claude --help': [
+    'Usage: claude [options] [query]',
+    '',
+    'Options:',
+    '  -p, --print              非互動模式',
+    '  -c, --continue           接續最近對話',
+    '  -r, --resume [id|name]   恢復特定 session',
+    '  -w, --worktree [name]    在 git worktree 開啟',
+    '  --model <name>           sonnet | opus | 全名',
+    '  --effort <level>         low|medium|high|max',
+    '  --permission-mode <m>    default|plan|acceptEdits|auto|bypass',
+    '  --tools <list>           "Read,Edit,Bash"',
+    '  --output-format <f>      text|json|stream-json',
+    '  --max-budget-usd <n>     最大花費上限',
+    '  --max-turns <n>          最大來回次數',
+    '  --bg                     啟動為背景任務',
+    '',
+    'Commands:',
+    '  claude auth login        登入',
+    '  claude agents            列出背景任務',
+    '  claude logs <id>         查看任務 log',
+    '  claude mcp               管理 MCP servers',
+    '',
+    '範例: claude -p --model opus "重構 @src/auth"'
+  ],
+  'claude --version': ['Claude Code v2.077 (interactive simulator)'],
+  'claude': [
+    'Welcome to Claude Code!',
+    '',
+    '本模擬器無法啟動真實互動模式,',
+    '但可以試試這些指令:',
+    '  /compact   /init   /cost   /clear',
+    '  /model opus   /goal "..."   /quit',
+    '',
+    '> ' // ready prompt visual
+  ],
+  '/compact': ['Compacting conversation history...', '✓ Compressed 23 messages → 1 summary', 'Context freed: 14,200 tokens'],
+  '/init': [
+    'Scanning project structure...',
+    'Generating CLAUDE.md at ./CLAUDE.md',
+    '',
+    '✓ Created CLAUDE.md with:',
+    '  - Detected stack: React 18 + TypeScript',
+    '  - Package manager: pnpm',
+    '  - Test framework: vitest',
+    '  - 已自動掃描 .git, package.json'
+  ],
+  '/cost': [
+    'Current session cost:',
+    '  Input tokens:  12,450  →  $0.04',
+    '  Output tokens:  3,820  →  $0.06',
+    '  Total: $0.10',
+    '  Budget remaining: $4.90 / $5.00'
+  ],
+  '/clear': null,
+  'clear': null,
+  '/quit': ['Goodbye.'],
+  '/exit': ['Goodbye.']
+};
+
+function termWrite(html) {
+  const body = document.getElementById('terminalBody');
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+function termClearScreen() {
+  document.getElementById('terminalBody').innerHTML =
+    '<div><span class="prompt">$</span> <span class="cmd">clear</span></div>' +
+    '<div><span class="prompt">$</span> <span class="cursor"></span></div>';
+}
+
+function termRun(cmd) {
+  cmd = (cmd || '').trim();
+  if (!cmd) return;
+  // remove last prompt line
+  const body = document.getElementById('terminalBody');
+  const lastChild = body.lastElementChild;
+  if (lastChild && lastChild.querySelector('.cursor')) lastChild.remove();
+  termWrite('<span class="prompt">$</span> <span class="cmd">' + escapeHtml(cmd) + '</span>');
+
+  // handle clear
+  if (cmd === 'clear' || cmd === '/clear') {
+    termClearScreen();
+    document.getElementById('termInput').value = '';
+    return;
+  }
+
+  // exact match
+  let res = TERM_RESPONSES[cmd];
+
+  if (!res) {
+    // fuzzy match for partial commands
+    if (cmd.startsWith('claude -p')) {
+      res = [
+        'Processing query in print mode...',
+        '',
+        '[模擬輸出] Claude 會在這裡回答你的問題,',
+        '完成後直接退出,不留 session。',
+        '',
+        '提示: 加 --output-format json 可拿到結構化結果'
+      ];
+    } else if (cmd.startsWith('claude --model')) {
+      res = ['Model set: ' + (cmd.split(' ')[2] || 'default'), 'Starting session with selected model...'];
+    } else if (cmd.startsWith('claude --permission-mode')) {
+      const mode = cmd.split(' ')[2] || 'default';
+      res = ['Permission mode: ' + mode, '說明: ' + (mode === 'plan' ? '只規劃,不做變更' : mode === 'acceptEdits' ? '自動接受編輯' : mode === 'bypass' || mode === 'bypassPermissions' ? '⚠ 跳過所有確認(僅限 sandbox)' : '預設模式,敏感動作詢問')];
+    } else if (cmd.startsWith('claude --bg')) {
+      res = ['Starting background session...', '✓ Session ID: 7c5dcf5d', 'Use `claude logs 7c5dcf5d` to watch progress.', 'Use `claude attach 7c5dcf5d` to connect.'];
+    } else if (cmd.startsWith('claude -c')) {
+      res = ['Resuming most recent session...', '> Loaded 14 previous messages', '> Ready for next prompt.'];
+    } else if (cmd.startsWith('claude auth')) {
+      res = ['(模擬) 真實環境會開啟瀏覽器登入 Anthropic 帳號'];
+    } else if (cmd.startsWith('claude agents')) {
+      res = ['Active background sessions:', '  7c5dcf5d  refactor auth        running   2m ago', '  9a2bf1c0  type errors fix      done      5m ago'];
+    } else if (cmd.startsWith('/')) {
+      res = ['Unknown slash command: ' + cmd, '輸入 help 看可用指令'];
+    } else {
+      res = ['Command not recognized: ' + cmd, '輸入 help 看可用指令'];
+    }
+  }
+
+  if (res) {
+    res.forEach(line => {
+      termWrite('<span class="out">' + escapeHtml(line) + '</span>');
+    });
+  }
+
+  termWrite('<span class="prompt">$</span> <span class="cursor"></span>');
+  document.getElementById('termInput').value = '';
+  document.getElementById('termInput').focus();
+}
+
+function termFill(cmd) {
+  const input = document.getElementById('termInput');
+  input.value = cmd;
+  input.focus();
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* ===== INIT ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  restoreLearned();
+  applyFilter();
+});
+
+/* fallback if DOMContentLoaded already fired */
+if (document.readyState !== 'loading') {
+  restoreLearned();
+  applyFilter();
+}
+</script>
+
+</body>
+</html>
