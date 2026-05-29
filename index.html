@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UI://GLOSSARY.SYS v3 — 互動版</title>
+<title>UI://GLOSSARY.SYS v6 — 全動畫炫炫版 · React 寫法</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -20,7 +20,346 @@ body{
   font-family:'Rajdhani','Noto Sans TC',sans-serif;
   font-weight:400;line-height:1.55;overflow-x:hidden;
   position:relative;min-height:100vh;
+  cursor:none;
 }
+
+/* ===== MATRIX RAIN CANVAS ===== */
+#matrix-rain{
+  position:fixed;inset:0;z-index:0;
+  opacity:0.18;pointer-events:none;
+  mix-blend-mode:screen;
+}
+
+/* ===== CURSOR GLOW ===== */
+.cursor-glow{
+  position:fixed;width:24px;height:24px;
+  border:1px solid var(--cyan);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width 0.15s,height 0.15s,border-color 0.15s,background 0.15s;
+  mix-blend-mode:screen;
+}
+.cursor-glow::before{
+  content:'';position:absolute;inset:-1px;border-radius:50%;
+  box-shadow:0 0 20px var(--cyan),0 0 40px rgba(0,240,255,0.4);
+}
+.cursor-glow.hover{
+  width:50px;height:50px;border-color:var(--yellow);
+  background:radial-gradient(circle,rgba(252,238,10,0.15) 0%,transparent 70%);
+}
+.cursor-glow.click{
+  width:36px;height:36px;border-color:var(--magenta);
+  animation:cursorPulse 0.3s ease-out;
+}
+.cursor-dot{
+  position:fixed;width:4px;height:4px;
+  background:var(--cyan);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 8px var(--cyan);
+}
+@keyframes cursorPulse{
+  0%{transform:translate(-50%,-50%) scale(1)}
+  50%{transform:translate(-50%,-50%) scale(1.5)}
+  100%{transform:translate(-50%,-50%) scale(1)}
+}
+@media (hover:none) and (pointer:coarse){
+  body{cursor:auto}
+  .cursor-glow,.cursor-dot{display:none}
+}
+
+/* ===== CRT SCANLINE 全螢幕掃描線 ===== */
+.crt-scanline{
+  position:fixed;left:0;right:0;height:120px;
+  background:linear-gradient(180deg,
+    transparent 0%,
+    rgba(0,240,255,0.04) 30%,
+    rgba(0,240,255,0.08) 50%,
+    rgba(0,240,255,0.04) 70%,
+    transparent 100%);
+  pointer-events:none;z-index:5;
+  animation:crtScan 8s linear infinite;
+}
+@keyframes crtScan{
+  0%{top:-120px}
+  100%{top:100vh}
+}
+
+/* ===== HUD 角落元素 ===== */
+.hud{
+  position:fixed;z-index:50;pointer-events:none;
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.1em;color:var(--cyan);
+  text-shadow:0 0 8px rgba(0,240,255,0.6);
+}
+.hud-tl{top:1rem;left:1rem}
+.hud-tr{top:1rem;right:1rem;text-align:right}
+.hud-bl{bottom:1rem;left:1rem}
+.hud-br{bottom:5rem;right:1rem;text-align:right}
+.hud .row{margin:0.2rem 0;opacity:0.7}
+.hud .row .v{color:var(--yellow)}
+
+/* 雷達掃描 */
+.radar{
+  width:60px;height:60px;border:1px solid var(--cyan);
+  border-radius:50%;position:relative;margin-top:0.5rem;
+  opacity:0.5;
+}
+.radar::before,.radar::after{
+  content:'';position:absolute;background:var(--cyan);
+}
+.radar::before{
+  top:50%;left:50%;width:50%;height:1px;
+  transform-origin:left center;
+  animation:radarSweep 3s linear infinite;
+  box-shadow:0 0 10px var(--cyan);
+}
+.radar::after{
+  inset:30%;border-radius:50%;
+  background:radial-gradient(circle,var(--cyan) 0%,transparent 100%);
+  opacity:0.3;
+}
+.radar .dot{
+  position:absolute;width:3px;height:3px;border-radius:50%;
+  background:var(--magenta);box-shadow:0 0 6px var(--magenta);
+  animation:radarBlip 3s linear infinite;
+}
+.radar .dot:nth-child(1){top:20%;left:70%;animation-delay:0.5s}
+.radar .dot:nth-child(2){top:65%;left:25%;animation-delay:1.5s}
+.radar .dot:nth-child(3){top:40%;left:50%;animation-delay:2.2s}
+@keyframes radarSweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes radarBlip{
+  0%,90%,100%{opacity:0}
+  30%,60%{opacity:1}
+}
+
+/* 十字準心 */
+.crosshair{
+  width:40px;height:40px;position:relative;margin-top:0.5rem;
+  opacity:0.6;
+}
+.crosshair::before,.crosshair::after{
+  content:'';position:absolute;background:var(--cyan);
+}
+.crosshair::before{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
+.crosshair::after{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
+.crosshair-box{
+  position:absolute;inset:10px;border:1px solid var(--cyan);
+  animation:crosshairPulse 2s ease-in-out infinite;
+}
+@keyframes crosshairPulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.1);opacity:0.5}
+}
+
+/* 波形圖 */
+.waveform{
+  width:80px;height:30px;display:flex;align-items:center;
+  gap:2px;margin-top:0.4rem;
+}
+.waveform .b{
+  flex:1;background:var(--cyan);
+  animation:waveBar 1.5s ease-in-out infinite;
+  box-shadow:0 0 4px var(--cyan);
+}
+.waveform .b:nth-child(1){animation-delay:0s;height:30%}
+.waveform .b:nth-child(2){animation-delay:0.1s;height:60%}
+.waveform .b:nth-child(3){animation-delay:0.2s;height:80%}
+.waveform .b:nth-child(4){animation-delay:0.3s;height:50%}
+.waveform .b:nth-child(5){animation-delay:0.4s;height:90%}
+.waveform .b:nth-child(6){animation-delay:0.5s;height:40%}
+.waveform .b:nth-child(7){animation-delay:0.6s;height:70%}
+.waveform .b:nth-child(8){animation-delay:0.7s;height:55%}
+@keyframes waveBar{
+  0%,100%{transform:scaleY(0.4)}
+  50%{transform:scaleY(1)}
+}
+
+/* ===== 全域音波 BAR(底部) ===== */
+.sfx-viz{
+  position:fixed;bottom:0;left:0;right:0;height:40px;
+  display:flex;align-items:flex-end;
+  gap:2px;padding:0 1rem;z-index:99;
+  pointer-events:none;opacity:0;
+  transition:opacity 0.3s;
+}
+.sfx-viz.active{opacity:0.6}
+.sfx-viz .vb{
+  flex:1;background:linear-gradient(to top,var(--cyan),var(--yellow),var(--magenta));
+  height:2px;transition:height 0.08s ease-out;
+  box-shadow:0 0 6px var(--cyan);
+}
+
+/* ===== SCROLL REVEAL 進場動畫 ===== */
+.reveal{
+  opacity:0;transform:translateY(40px);
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+             transform 0.7s cubic-bezier(0.16,1,0.3,1);
+  position:relative;
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal::after{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:2px;background:var(--cyan);
+  box-shadow:0 0 20px var(--cyan);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.8s ease-out;
+}
+.reveal.visible::after{transform:scaleX(1);transition-delay:0.1s}
+.reveal.visible.scan-done::after{opacity:0;transition:opacity 0.3s 1s}
+
+.reveal-stagger{
+  opacity:0;transform:translateY(20px) scale(0.95);
+  transition:all 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-stagger.visible{opacity:1;transform:translateY(0) scale(1)}
+
+/* ===== 隨機 GLITCH FLASH ===== */
+@keyframes glitchFlash{
+  0%,100%{
+    clip-path:inset(0 0 0 0);
+    transform:translate(0);
+    filter:none;
+  }
+  10%{
+    clip-path:inset(20% 0 30% 0);
+    transform:translate(-4px,2px);
+    filter:hue-rotate(90deg);
+  }
+  20%{
+    clip-path:inset(50% 0 5% 0);
+    transform:translate(3px,-1px);
+    filter:hue-rotate(-90deg) saturate(2);
+  }
+  30%{
+    clip-path:inset(10% 0 70% 0);
+    transform:translate(-2px,1px);
+    filter:invert(0.3);
+  }
+  40%{
+    clip-path:inset(80% 0 5% 0);
+    transform:translate(2px,0);
+  }
+  50%{
+    clip-path:inset(0 0 0 0);
+    transform:translate(0);
+  }
+}
+.glitch-flash{animation:glitchFlash 0.6s steps(8) 1}
+
+/* ===== TILT 3D 卡片(JS 動態套用 transform) ===== */
+.term{
+  transform-style:preserve-3d;
+  transition:transform 0.15s ease-out,box-shadow 0.25s ease;
+  will-change:transform;
+}
+.term:hover{transform:perspective(800px) rotateX(0) rotateY(0)} /* 預設,JS 會覆寫 */
+.term .gloss{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),
+    rgba(0,240,255,0.15) 0%,transparent 50%);
+  opacity:0;transition:opacity 0.25s;
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+}
+.term:hover .gloss{opacity:1}
+
+/* ===== 打字機 cursor ===== */
+.typewriter::after{
+  content:'▊';color:var(--green);margin-left:2px;
+  animation:blink 0.8s steps(2) infinite;
+}
+.typewriter.done::after{display:none}
+
+/* ===== COUNT-UP STAT 強調效果 ===== */
+.hero-stats .val{
+  display:inline-block;
+  transition:color 0.3s;
+}
+.hero-stats .val.counting{
+  color:var(--yellow);
+  text-shadow:0 0 8px rgba(252,238,10,0.6);
+}
+
+/* ===== 詞彙卡 hover 強化 ===== */
+.term::before{
+  transition:background 0.25s ease,box-shadow 0.25s ease;
+}
+.term:hover::before{
+  background:var(--yellow);
+  box-shadow:0 0 15px var(--yellow);
+}
+
+/* ===== 章節編號 hover 變色 ===== */
+.section-num{
+  transition:all 0.3s;
+  cursor:default;
+}
+.section:hover .section-num{
+  -webkit-text-stroke:1px var(--cyan);
+  background:linear-gradient(180deg,var(--cyan) 0%,transparent 80%);
+  -webkit-background-clip:text;background-clip:text;
+  text-shadow:0 0 20px rgba(0,240,255,0.5);
+}
+
+/* ===== Hero quote 終端打字機背景 ===== */
+.hero-quote{
+  overflow:hidden;
+}
+.hero-quote .typed{
+  display:inline-block;
+  min-height:1.5em;
+}
+
+/* ===== Button glow 強化 ===== */
+.hero-cta button,.demo-trigger,.copy-good{
+  position:relative;overflow:hidden;
+}
+.hero-cta button::before,.demo-trigger::before{
+  content:'';position:absolute;top:0;left:-100%;
+  width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
+  transition:left 0.6s;
+}
+.hero-cta button:hover::before,.demo-trigger:hover::before{left:150%}
+
+/* ===== Section transition glitch 線 ===== */
+.section{position:relative}
+.section::before{
+  content:'';position:absolute;top:-1px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,
+    transparent 0%,var(--magenta) 20%,
+    transparent 25%,var(--cyan) 50%,
+    transparent 55%,var(--yellow) 80%,
+    transparent 100%);
+  background-size:200% 100%;
+  animation:sectionLine 5s linear infinite;
+  opacity:0.4;
+}
+@keyframes sectionLine{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+/* ===== 飄浮粒子(用 CSS 偽元素) ===== */
+.particles{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  overflow:hidden;
+}
+.particle{
+  position:absolute;width:2px;height:2px;
+  background:var(--cyan);border-radius:50%;
+  box-shadow:0 0 4px var(--cyan);
+  animation:floatUp linear infinite;
+  opacity:0.4;
+}
+@keyframes floatUp{
+  0%{transform:translateY(100vh) translateX(0);opacity:0}
+  10%{opacity:0.4}
+  90%{opacity:0.4}
+  100%{transform:translateY(-10vh) translateX(var(--drift,30px));opacity:0}
+}
+
+
 body::before{
   content:'';position:fixed;inset:0;
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),
@@ -154,6 +493,7 @@ body::after{
 }
 .hero-cta button.alt{color:var(--yellow);border-color:var(--yellow)}
 .hero-cta button.alt:hover{background:var(--yellow);color:var(--bg);box-shadow:0 0 20px var(--yellow)}
+.hero-cta button[style*="magenta"]:hover{background:var(--magenta)!important;color:#fff!important;box-shadow:0 0 20px var(--magenta)!important}
 
 .hero-bottom{
   padding:1.5rem 0;border-top:1px solid rgba(0,240,255,0.3);
@@ -1079,6 +1419,28 @@ footer .colophon{
 }
 footer .colophon .c{color:var(--cyan)}
 
+/* ===== SFX TOGGLE (右下角開關) ===== */
+.sfx-toggle{
+  position:fixed;right:1rem;bottom:1rem;z-index:300;
+  background:var(--bg);color:var(--mute);
+  border:1px solid var(--mute);
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  letter-spacing:0.15em;padding:0.5rem 0.8rem;cursor:pointer;
+  display:flex;align-items:center;gap:0.4rem;
+  transition:all 0.2s;text-transform:uppercase;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+}
+.sfx-toggle:hover{color:var(--cyan);border-color:var(--cyan)}
+.sfx-toggle.on{
+  color:var(--green);border-color:var(--green);
+  box-shadow:0 0 12px rgba(57,255,20,0.3);
+}
+.sfx-toggle.on .sfx-icon{animation:pulse 1.5s ease-in-out infinite}
+@media (max-width:480px){
+  .sfx-toggle{font-size:0.62rem;padding:0.4rem 0.6rem;right:0.5rem;bottom:0.5rem}
+  .sfx-toggle .sfx-label{display:none}
+}
+
 /* ===== JOHNNY MESSAGES (隨機浮現) ===== */
 .johnny-msg{
   position:fixed;left:1rem;bottom:1rem;z-index:200;
@@ -1443,6 +1805,55 @@ footer .colophon .c{color:var(--cyan)}
 </head>
 <body>
 
+<!-- ===== MATRIX RAIN CANVAS ===== -->
+<canvas id="matrix-rain"></canvas>
+
+<!-- ===== 飄浮粒子 ===== -->
+<div class="particles" id="particles"></div>
+
+<!-- ===== CRT 掃描線 ===== -->
+<div class="crt-scanline"></div>
+
+<!-- ===== 滑鼠光暈 ===== -->
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- ===== HUD 角落元素 ===== -->
+<div class="hud hud-tl">
+  <div class="row">SYS_<span class="v">[ONLINE]</span></div>
+  <div class="row">GRID://<span class="v">NIGHT_CITY</span></div>
+  <div class="row">LAT <span class="v" id="hudLat">37.7749</span></div>
+  <div class="row">LON <span class="v" id="hudLon">-122.4194</span></div>
+  <div class="radar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+</div>
+<div class="hud hud-tr">
+  <div class="row">TIME <span class="v" id="hudTime">00:00:00</span></div>
+  <div class="row">CYC <span class="v" id="hudCyc">0</span></div>
+  <div class="row">FPS <span class="v" id="hudFps">60</span></div>
+  <div class="crosshair"><div class="crosshair-box"></div></div>
+</div>
+<div class="hud hud-bl">
+  <div class="row">SIGNAL_<span class="v">[ENCRYPTED]</span></div>
+  <div class="waveform">
+    <div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div>
+    <div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div>
+  </div>
+</div>
+
+<!-- ===== 音波視覺化 ===== -->
+<div class="sfx-viz" id="sfxViz">
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+  <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+</div>
+
 <div class="scroll-progress" id="scrollProgress"></div>
 <div class="toast-container" id="toastContainer"></div>
 
@@ -1491,14 +1902,15 @@ footer .colophon .c{color:var(--cyan)}
 
 <!-- ===== STICKY NAV ===== -->
 <nav class="sticky-nav">
-  <div class="brand">UI://GLOSSARY.v3</div>
+  <div class="brand">UI://GLOSSARY.v5</div>
   <div class="links">
     <a href="#overlay">01 OVERLAY</a>
     <a href="#input">02 INPUT</a>
     <a href="#layout">03 LAYOUT</a>
     <a href="#prompt">04 PROMPT</a>
-    <a href="#cli">05 CLI</a>
-    <a href="#cheat">06 CHEAT</a>
+    <a href="#react">05 REACT</a>
+    <a href="#cli">06 CLI</a>
+    <a href="#cheat">07 CHEAT</a>
   </div>
 </nav>
 
@@ -1514,27 +1926,32 @@ footer .colophon .c{color:var(--cyan)}
   </div>
 
   <div class="hero-main">
-    <span class="hero-tag"><span class="long">// UI://COMPONENT_LEXICON.v4 // </span>NIGHT CITY EDITION</span>
+    <span class="hero-tag"><span class="long">// UI://COMPONENT_LEXICON.v6 // </span>FULL FX EDITION</span>
     <h1>
       <span class="t-line">MODAL.<span class="glitch">DRAWER</span>.TOAST</span>
-      <span class="ja">給 CLAUDE 的精準指令協議</span>
-      <span class="v3"><span class="long">>> </span>v4 · 2077 · MOBILE READY</span>
+      <span class="ja">給 CLAUDE 的 REACT 指令協議</span>
+      <span class="v3"><span class="long">>> </span>v6 · MATRIX · 3D · HUD · WAVEFORM</span>
     </h1>
     <div class="hero-meta">
       <p>
         在 Night City,光說不練是沒用的。<br>
-        這版每個 UI 元件都<span class="hl">真的能點</span>——
-        點 Toast 看它跳出、拉 Slider 看數字變動、開 Modal 看背景變暗。
-        順手把任務<span class="hl-y">標記為已學會</span>,進度自動存進義體記憶體。<br>
-        外加一個<span class="hl-g">假終端機</span>,
-        讓你不裝 Claude Code 也能練習指令——
-        choom,在你跳進 Mikoshi 之前,先學會基本款。
+        這版除了所有元件<span class="hl">真的能點</span>之外,
+        背景跑著<span class="hl-g">Matrix 數字雨</span>、
+        角落有<span class="hl-y">HUD 雷達 + 十字準心 + 波形圖</span>、
+        詞彙卡會跟著<span class="hl">滑鼠 3D 傾斜</span>、
+        Hero quote 用<span class="hl-g">打字機效果</span>輸出、
+        數字統計從零<span class="hl-y">count-up</span>、
+        標題每隔幾秒<span class="hl">隨機 glitch 爆裂</span>、
+        進場有 <span class="hl-g">scan-in reveal</span>、
+        開 SFX 後底部會跳<span class="hl-y">音波視覺化</span>。<br>
+        所有「複製 prompt」全是 <span class="hl-g">React 18 + TypeScript</span> 寫法。<br>
+        <span style="color:var(--magenta);font-size:0.85em">→ 右下角 SFX 開關 + ⚠ RELIC MALFUNCTION 試聽鈕。</span>
       </p>
       <div class="hero-stats">
-        <div>VERSION ··· <span class="val">4.077</span></div>
+        <div>VERSION ··· <span class="val">6.077</span></div>
+        <div>STACK ··· <span class="val">REACT 18 + TS</span></div>
+        <div>FX LAYERS ··· <span class="val">12</span></div>
         <div>UI ENTRIES ··· <span class="val">24</span></div>
-        <div>INTERACTIVE ··· <span class="val">YES</span></div>
-        <div>MOBILE ··· <span class="val">OPTIMIZED</span></div>
         <div>CITY ··· <span class="val">NIGHT CITY</span></div>
         <div>STATUS ··· <span class="val">JACKED IN</span></div>
       </div>
@@ -1542,24 +1959,25 @@ footer .colophon .c{color:var(--cyan)}
     <div class="hero-cta">
       <button onclick="document.getElementById('overlay').scrollIntoView({behavior:'smooth'})">▶ 開始探索</button>
       <button class="alt" onclick="document.getElementById('terminal').scrollIntoView({behavior:'smooth'})">⌨ 試玩終端機</button>
+      <button onclick="if(!sfxOn)toggleSfx();sfx('relic')" style="border-color:var(--magenta);color:var(--magenta)">⚠ RELIC MALFUNCTION</button>
     </div>
 
     <div class="hero-quote">
-      Wake the fuck up, Samurai. We have a city to burn.<br>
-      <span style="color:var(--yellow);font-size:0.75rem;letter-spacing:0.15em">// 起來吧,武士。我們有座城市要燒了。</span>
+      <span class="typed typewriter" id="typedQuote"></span><br>
+      <span style="color:var(--yellow);font-size:0.75rem;letter-spacing:0.15em" id="typedQuoteZh"></span>
     </div>
   </div>
 
   <div class="hero-bottom">
     <div>01-03 · UI 元件(可互動)</div>
-    <div>04 · PROMPT 協議</div>
-    <div>05 · CLAUDE CLI(可試玩)</div>
-    <div>06 · 速查表</div>
+    <div>04 · PROMPT 協議(React)</div>
+    <div>05 · REACT 程式碼範例</div>
+    <div>06 · CLAUDE CLI</div>
   </div>
 </section>
 
 <!-- ===== FILTER BAR ===== -->
-<section class="section" id="overlay">
+<section class="section reveal" id="overlay">
   <div class="section-head">
     <div class="section-num">01</div>
     <div class="titles">
@@ -1591,7 +2009,7 @@ footer .colophon .c{color:var(--cyan)}
 
   <div class="terms" id="termsOverlay">
 
-    <article class="term" data-cat="overlay" data-id="modal" data-keywords="modal dialog 視窗 對話框 彈窗 確認 刪除">
+    <article class="term reveal-stagger" data-cat="overlay" data-id="modal" data-keywords="modal dialog 視窗 對話框 彈窗 確認 刪除"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x01A</span>
         <span class="term-tag danger">BLOCKING</span>
@@ -1605,11 +2023,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">確認刪除、登入表單、編輯資料</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'modal')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Modal 對話框,標題「確認刪除」,內文「此操作無法復原」,主按鈕「刪除」(紅色 destructive),次按鈕「取消」。按 Esc 或點背景可關閉。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('用 React + TypeScript 做一個 Modal 元件。Props: { open, onClose, title, children, onConfirm }。用 createPortal 渲染到 document.body,useEffect 監聽 Esc 鍵與點背景關閉。!open 時 return null。範例:確認刪除框,主按鈕「刪除」用 destructive variant。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="overlay" data-id="drawer" data-keywords="drawer sheet 抽屜 側欄 滑入 panel">
+    <article class="term reveal-stagger" data-cat="overlay" data-id="drawer" data-keywords="drawer sheet 抽屜 側欄 滑入 panel"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x01B</span>
         <span class="term-tag">SLIDE-IN</span>
@@ -1623,11 +2041,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">手機漢堡選單、Notion 評論欄</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'drawer')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個從右側滑入的 Drawer 元件,寬 380px,內含設定面板。背景變暗 60%,點背景或按 Esc 可關閉,動畫時長 300ms。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('用 React 做 Drawer 元件。Props: { open, onClose, side=\"right\", children }。CSS transform: translateX 控制滑入,transition 300ms cubic-bezier。createPortal 到 body,useEffect 處理 Esc。寬 380px,backdrop 半透明。可選 framer-motion AnimatePresence。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="overlay" data-id="bottomsheet" data-keywords="bottom sheet 底部 滑出 手機 mobile">
+    <article class="term reveal-stagger" data-cat="overlay" data-id="bottomsheet" data-keywords="bottom sheet 底部 滑出 手機 mobile"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x01C</span>
         <span class="term-tag">MOBILE</span>
@@ -1641,11 +2059,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">iOS 分享選單、Maps 地點詳情</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'bottomsheet')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Bottom Sheet,從畫面底部滑入,最大高度 60vh。頂部顯示小型拉桿手柄,可拖曳調整高度。內含「分享到 LINE / Telegram / Email / 複製連結」四個選項。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Bottom Sheet 元件。Props: { open, onClose, snapPoints=[0.3, 0.6, 0.9], children }。用 useRef + onPointerDown/Move/Up 處理拖曳,鬆手時 snap 到最近 snapPoint。最大高度 60vh,頂部 handle 可拖曳。可整合 vaul 或 framer-motion。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="overlay" data-id="toast" data-keywords="toast snackbar 吐司 提示 通知 訊息 短暫">
+    <article class="term reveal-stagger" data-cat="overlay" data-id="toast" data-keywords="toast snackbar 吐司 提示 通知 訊息 短暫"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x01D</span>
         <span class="term-tag info">TEMP</span>
@@ -1664,11 +2082,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">已加入購物車、複製連結成功</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'toast')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Toast 通知系統,出現在畫面右上角,3 秒後自動消失。支援 success(綠)、info(藍)、warn(黃)、error(紅)四種狀態,從右側滑入,可堆疊多個。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Toast 系統:實作 ToastProvider + useToast() hook。Provider 內 useState 管 toasts 陣列,toast() 加入並 setTimeout 3 秒後移除。包成 Context,任何子元件呼叫 const toast = useToast(); toast(\"訊息\", \"success\")。CSS 從右側滑入,可堆疊。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="overlay" data-id="tooltip" data-keywords="tooltip 提示 泡泡 hover 滑鼠">
+    <article class="term reveal-stagger" data-cat="overlay" data-id="tooltip" data-keywords="tooltip 提示 泡泡 hover 滑鼠"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x01E</span>
         <span class="term-tag">HOVER</span>
@@ -1692,11 +2110,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">圖示 hover 顯示「複製」、「刪除」</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'tooltip')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Tooltip 元件,hover 觸發,放在按鈕上方,延遲 300ms 出現。深色背景,小字單行,寬度自適應內容。手機觸控時不顯示。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Tooltip 元件。Props: { content, children, delay=300, placement=\"top\" }。useState(visible) + onMouseEnter/Leave 加 setTimeout 延遲。可整合 @floating-ui/react 處理定位。用 useMediaQuery 偵測觸控裝置自動停用,符合 ARIA tooltip 規範。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="overlay" data-id="popover" data-keywords="popover click 點擊 浮動 面板">
+    <article class="term reveal-stagger" data-cat="overlay" data-id="popover" data-keywords="popover click 點擊 浮動 面板"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x01F</span>
         <span class="term-tag">CLICK</span>
@@ -1716,7 +2134,7 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">頭像點擊後的帳號選單、emoji 選擇器</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'popover')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Popover 元件,點擊頭像開啟。內含使用者名稱、email、「個人設定」連結、「登出」按鈕。點外面或按 Esc 關閉,需有箭頭指向觸發元素。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Popover 元件。Props: { trigger, content, placement }。useState(isOpen),useRef 取得觸發元素位置。useEffect 監聽 document click 處理外部點擊(用 ref.current.contains(e.target) 判斷)+ Esc 鍵。整合 @floating-ui/react 處理箭頭與定位。')">複製 prompt</button>
       </div>
     </article>
 
@@ -1724,7 +2142,7 @@ footer .colophon .c{color:var(--cyan)}
 </section>
 
 <!-- ===== SECTION 02 - INPUT ===== -->
-<section class="section" id="input">
+<section class="section reveal" id="input">
   <div class="section-head">
     <div class="section-num">02</div>
     <div class="titles">
@@ -1744,7 +2162,7 @@ footer .colophon .c{color:var(--cyan)}
 
   <div class="terms" id="termsInput">
 
-    <article class="term" data-cat="input" data-id="slider" data-keywords="slider range 拉桿 滑桿 範圍">
+    <article class="term reveal-stagger" data-cat="input" data-id="slider" data-keywords="slider range 拉桿 滑桿 範圍"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x02A</span>
         <span class="term-tag">RANGE</span>
@@ -1762,11 +2180,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">音量、亮度、價格篩選範圍</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'slider')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Slider,範圍 0-100,步進為 1,即時顯示當前數值。預設值 50,可鍵盤左右調整,可拖曳。配色用青色軌道 + 黃色滑塊。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Slider:受控元件 (controlled)。Props: { value, onChange, min=0, max=100, step=1 }。useState 在父層管理。內部用 <input type=\"range\"> 或自刻 div + onPointerMove。需 ARIA: role=\"slider\", aria-valuenow/min/max。鍵盤 ←→ 調整。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="input" data-id="toggle" data-keywords="toggle switch 開關 切換">
+    <article class="term reveal-stagger" data-cat="input" data-id="toggle" data-keywords="toggle switch 開關 切換"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x02B</span>
         <span class="term-tag ok">TOGGLE</span>
@@ -1784,11 +2202,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">深色模式、通知、Wi-Fi 開關</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'toggle')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Toggle Switch,標籤「夜間模式」,點擊立即生效並儲存到 localStorage。開啟時綠色,關閉時灰色,支援鍵盤空白鍵切換,符合 ARIA switch 規範。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Toggle Switch:受控元件。Props: { checked, onChange, label, disabled }。父層用 useState + useEffect 同步 localStorage(可抽成 useLocalStorage hook)。role=\"switch\" + aria-checked。鍵盤空白鍵切換用 onKeyDown 處理。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="input" data-id="checkbox" data-keywords="checkbox 勾選 多選 核取">
+    <article class="term reveal-stagger" data-cat="input" data-id="checkbox" data-keywords="checkbox 勾選 多選 核取"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x02C</span>
         <span class="term-tag">MULTI</span>
@@ -1806,11 +2224,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">同意條款、多標籤勾選、Todo</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'checkbox')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一組 Checkbox 列表,支援多選。父級 checkbox 控制全選/取消,子項全選時父級勾選,部分選時顯示 indeterminate 狀態。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Checkbox 群組:CheckboxGroup + Checkbox 子元件,Context 共享 selectedIds。父 Checkbox 用 useEffect 判斷 children 狀態:全選 checked、部分用 ref + indeterminate=true(注意 indeterminate 不是 prop 而是 DOM property,需 useRef)。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="input" data-id="radio" data-keywords="radio 單選 圓鈕 選一">
+    <article class="term reveal-stagger" data-cat="input" data-id="radio" data-keywords="radio 單選 圓鈕 選一"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x02D</span>
         <span class="term-tag warn">SINGLE</span>
@@ -1828,11 +2246,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">性別、付款方式、評分</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'radio')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一組 Radio Button,標題「選擇付款方式」。三個選項:信用卡、Apple Pay、Google Pay。一次只能選一個,選中項目有視覺強調,鍵盤上下可切換。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Radio Group:用 Context 模式。RadioGroup 提供 value/onChange,Radio 子元件 useContext 取得。onKeyDown 處理 ↑↓ 切換選項,role=\"radiogroup\" + 每個 role=\"radio\"。focus 管理用 useRef 陣列。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="input" data-id="dropdown" data-keywords="dropdown select 下拉 選單">
+    <article class="term reveal-stagger" data-cat="input" data-id="dropdown" data-keywords="dropdown select 下拉 選單"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x02E</span>
         <span class="term-tag">SELECT</span>
@@ -1856,11 +2274,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">國家選擇、排序、語言切換</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'dropdown')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Combobox(可搜尋的下拉選單),選項是國家列表。支援鍵盤導覽(↑↓ Enter Esc),輸入文字即時過濾選項,符合 ARIA combobox 規範。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Combobox:useState(query, isOpen, highlightIdx)。filtered = useMemo(() => options.filter(o => o.match(query)), [query])。onKeyDown 處理 ↑↓ Enter Esc。ARIA: role=\"combobox\" + aria-expanded/activedescendant。可用 downshift 或 react-aria。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="input" data-id="input" data-keywords="input text 輸入框 文字">
+    <article class="term reveal-stagger" data-cat="input" data-id="input" data-keywords="input text 輸入框 文字"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x02F</span>
         <span class="term-tag">TEXT</span>
@@ -1874,7 +2292,7 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">搜尋欄、email 輸入、帳號登入</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'input')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個搜尋輸入框,左側有 search 圖示,右側有清除按鈕(有內容時才顯示)。debounce 300ms 後觸發搜尋。focus 時邊框變色,error 狀態下方顯示紅色錯誤訊息。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Input 元件。受控:useState(value) + onChange。debounce 用 useEffect + setTimeout 300ms,cleanup 函式 clearTimeout。或抽成 useDebounce(value, 300) hook。Props: { value, onChange, leftIcon, error }。')">複製 prompt</button>
       </div>
     </article>
 
@@ -1882,7 +2300,7 @@ footer .colophon .c{color:var(--cyan)}
 </section>
 
 <!-- ===== SECTION 03 - LAYOUT ===== -->
-<section class="section" id="layout">
+<section class="section reveal" id="layout">
   <div class="section-head">
     <div class="section-num">03</div>
     <div class="titles">
@@ -1902,7 +2320,7 @@ footer .colophon .c{color:var(--cyan)}
 
   <div class="terms" id="termsLayout">
 
-    <article class="term" data-cat="layout" data-id="navbar" data-keywords="header navbar 頁首 導覽">
+    <article class="term reveal-stagger" data-cat="layout" data-id="navbar" data-keywords="header navbar 頁首 導覽"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03A</span>
         <span class="term-tag">TOP</span>
@@ -1923,11 +2341,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">網站頂部選單、App 的標題列</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'navbar')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 sticky navbar,左側 logo、中央導覽連結、右側搜尋與使用者頭像。向下滾動時隱藏、向上滾動時出現。手機版改成漢堡選單,點擊開啟側邊 Drawer。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Navbar:useEffect 監聽 scroll,比較 prevScrollY 判斷方向,useState 控制隱藏。useMediaQuery 偵測 < 768px,切換為漢堡選單,點擊用前面的 OverlayProvider.openDrawer 開啟側邊面板。position: sticky + top: 0。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="sidebar" data-keywords="sidebar 側邊欄 側欄">
+    <article class="term reveal-stagger" data-cat="layout" data-id="sidebar" data-keywords="sidebar 側邊欄 側欄"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03B</span>
         <span class="term-tag">SIDE</span>
@@ -1949,11 +2367,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">VS Code 檔案總管、Slack 頻道</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'sidebar')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個左側 Sidebar,寬 240px,內含使用者頭像、導覽連結、設定按鈕。支援摺疊到 64px 只剩圖示,手機版改成從左滑入的 Drawer。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Sidebar:useState(collapsed),CSS width 從 240px 切到 64px,transition 200ms。摺疊狀態用 localStorage 持久化(useLocalStorage hook)。手機 useMediaQuery 自動改用 Drawer 模式。React Router NavLink 處理 active 樣式。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="tabs" data-keywords="tabs 分頁 標籤 頁籤">
+    <article class="term reveal-stagger" data-cat="layout" data-id="tabs" data-keywords="tabs 分頁 標籤 頁籤"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03C</span>
         <span class="term-tag info">SWITCH</span>
@@ -1974,11 +2392,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">設定頁面的「個人/帳號/通知」</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'tabs')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Tabs 元件,三個分頁:「個人資料」、「安全設定」、「通知」。當前分頁底部有色條強調,內容區域切換時有淡入動畫,鍵盤左右可切換。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Tabs:Tabs (Context provider) + TabList + Tab + TabPanel 組合。Context 共享 activeId。onKeyDown 處理 ← → 切換。role=\"tablist\" + aria-selected。切換動畫用 framer-motion AnimatePresence mode=\"wait\"。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="breadcrumb" data-keywords="breadcrumb 麵包屑 路徑 階層">
+    <article class="term reveal-stagger" data-cat="layout" data-id="breadcrumb" data-keywords="breadcrumb 麵包屑 路徑 階層"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03D</span>
         <span class="term-tag">PATH</span>
@@ -2000,11 +2418,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">電商分類路徑、檔案路徑</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'breadcrumb')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Breadcrumb 元件,顯示當前頁面的階層路徑。每一層除了最後一層都是可點擊連結,當前頁面用粗體標示。手機版自動折疊中間層級。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Breadcrumb:Props: { items: { label, href }[] }。map 渲染,最後一項 aria-current=\"page\" 不可點擊。useMediaQuery 偵測手機,items.length > 3 時自動折疊中間項為「...」可點開展開。React Router Link 或 Next.js Link。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="accordion" data-keywords="accordion collapse 摺疊 收合">
+    <article class="term reveal-stagger" data-cat="layout" data-id="accordion" data-keywords="accordion collapse 摺疊 收合"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03E</span>
         <span class="term-tag">EXPAND</span>
@@ -2027,11 +2445,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">FAQ、設定的進階選項</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'accordion')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Accordion 元件,FAQ 用,可以單一展開模式(一次只開一個)或多重展開模式。展開時有平滑動畫,符合 ARIA disclosure 規範。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Accordion:Props: { type: \"single\" | \"multiple\", items }。useState 存開啟的 id(string 或 string[])。動畫用 max-height transition 或 framer-motion 的 height: auto。ARIA: button + aria-expanded + aria-controls。可用 Radix UI Accordion。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="carousel" data-keywords="carousel slider 輪播 走馬燈">
+    <article class="term reveal-stagger" data-cat="layout" data-id="carousel" data-keywords="carousel slider 輪播 走馬燈"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03F</span>
         <span class="term-tag">SCROLL</span>
@@ -2053,11 +2471,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">首頁 banner、產品圖、推薦商品</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'carousel')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Carousel 元件,輪播首頁 banner。每 5 秒自動切換,底部有 dot indicator,左右有箭頭。hover 時暫停自動播放,支援觸控滑動,使用 IntersectionObserver 暫停離畫面的輪播。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Carousel:useState(activeIdx),useEffect setInterval 自動播放 5s,cleanup 清除。useRef + useEffect IntersectionObserver 偵測離開畫面暫停。hover 用 useState(isPaused) 控制。可用 embla-carousel-react 或 swiper-react。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="card" data-keywords="card 卡片 容器">
+    <article class="term reveal-stagger" data-cat="layout" data-id="card" data-keywords="card 卡片 容器"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03G</span>
         <span class="term-tag">CONTAINER</span>
@@ -2074,11 +2492,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">產品卡、文章預覽、Pinterest</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'card')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Product Card,包含縮圖、標題、描述、價格、加入購物車按鈕。整張卡可點擊進入詳情頁,hover 時有微妙的提升效果(translateY -2px + shadow)。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Card:整張用 React Router <Link> 或 next/link 包裹。內部「加入購物車」按鈕用 onClick + e.stopPropagation() 防止觸發外層導航。CSS :hover transform translateY(-2px)。Props 接收 product 物件。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="button" data-keywords="button 按鈕 觸發 動作">
+    <article class="term reveal-stagger" data-cat="layout" data-id="button" data-keywords="button 按鈕 觸發 動作"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03H</span>
         <span class="term-tag ok">ACTION</span>
@@ -2097,11 +2515,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">送出、取消、刪除</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'button')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一組 Button 元件,涵蓋 4 種變體:primary / secondary / ghost / destructive,以及 3 種尺寸:sm / md / lg。每種都有 default / hover / active / disabled / loading 狀態。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Button 元件。Props: { variant, size, loading, disabled, children, ...rest }。用 cva (class-variance-authority) 或 clsx 組合 className。loading 時 disabled + 顯示 Spinner。forwardRef 支援外部 ref。也可參考 shadcn/ui 的 Button 寫法。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="badge" data-keywords="badge chip tag 徽章 標籤">
+    <article class="term reveal-stagger" data-cat="layout" data-id="badge" data-keywords="badge chip tag 徽章 標籤"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03I</span>
         <span class="term-tag danger">NOTIFY</span>
@@ -2126,11 +2544,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">未讀紅點、文章標籤、篩選器</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'badge')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個通知 Badge,附在鈴鐺圖示右上角。數字 1-9 顯示實際數字,>=10 顯示「9+」,0 時隱藏整個 badge。背景紅色,白色數字,小尺寸。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Badge 元件。Props: { count, max=9, children }。children 為被附加的元素(如鈴鐺圖示),Badge 用 position: absolute 浮在右上。count === 0 時整個元件 return null,count > max 顯示 `${max}+`。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="progress" data-keywords="progress 進度 bar">
+    <article class="term reveal-stagger" data-cat="layout" data-id="progress" data-keywords="progress 進度 bar"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03J</span>
         <span class="term-tag">PROGRESS</span>
@@ -2148,11 +2566,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">檔案上傳、影片載入、安裝</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'progress')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Progress Bar,顯示檔案上傳進度。確定型(0-100%)與不確定型(無限動畫)兩種模式。上方顯示檔名,右上角顯示百分比,完成時變綠色並淡出。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Progress 元件。Props: { value, max=100, indeterminate }。確定型用 style={{ width: `${value/max*100}%` }}。不確定型 CSS keyframes 動畫。useEffect 監聽 value === max 時觸發 onComplete callback,加上 transition 變綠色。role=\"progressbar\"。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="spinner" data-keywords="spinner loader 載入 等待">
+    <article class="term reveal-stagger" data-cat="layout" data-id="spinner" data-keywords="spinner loader 載入 等待"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03K</span>
         <span class="term-tag warn">LOAD</span>
@@ -2169,11 +2587,11 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">頁面載入、按鈕等待回應</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'spinner')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 Skeleton Screen,顯示為文章列表的灰色佔位元素。包含縮圖、標題(兩行)、副標題的形狀,有微妙的左右掃光動畫(shimmer effect)。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React Skeleton 元件。Pure 元件接受 width/height/className,內部 CSS keyframes shimmer (linear-gradient + animation)。組合成 SkeletonCard、SkeletonList 等高層元件,用 prop loading 切換顯示。注意保留版面高度避免 layout shift。')">複製 prompt</button>
       </div>
     </article>
 
-    <article class="term" data-cat="layout" data-id="fab" data-keywords="fab floating 浮動 動作鈕">
+    <article class="term reveal-stagger" data-cat="layout" data-id="fab" data-keywords="fab floating 浮動 動作鈕"><div class="gloss"></div>
       <div class="term-header">
         <span class="term-id">ID::0x03L</span>
         <span class="term-tag">FLOAT</span>
@@ -2190,7 +2608,7 @@ footer .colophon .c{color:var(--cyan)}
       <p class="term-example">Gmail 寫信、Twitter 發推、新增</p>
       <div class="term-actions">
         <button class="term-action-btn learn-toggle" onclick="toggleLearn(this,'fab')">標為已學</button>
-        <button class="term-action-btn" onclick="copyPrompt('做一個 FAB(Floating Action Button),固定在右下角,圓形 56x56px,藍色背景白色 + 號圖示。hover 時有提升效果,點擊展開 Speed Dial(3 個子按鈕扇形展開)。')">複製 prompt</button>
+        <button class="term-action-btn" onclick="copyPrompt('React FAB 元件。Props: { icon, actions: { icon, label, onClick }[] }。position: fixed bottom-right。useState(expanded),展開時子按鈕用 transform 扇形排列 + transition delay 階梯出現。useRef + 點外面收回(useOnClickOutside hook)。')">複製 prompt</button>
       </div>
     </article>
 
@@ -2198,7 +2616,7 @@ footer .colophon .c{color:var(--cyan)}
 </section>
 
 <!-- ===== SECTION 04 - PROMPT ===== -->
-<section class="section prompt-section" id="prompt">
+<section class="section prompt-section reveal" id="prompt">
   <div class="section-head">
     <div class="section-num">04</div>
     <div class="titles">
@@ -2219,70 +2637,70 @@ footer .colophon .c{color:var(--cyan)}
 
   <div class="prompt-grid">
 
-    <div class="principle">
+    <div class="principle reveal-stagger">
       <span class="principle-num">RULE 01</span>
       <h3>用<span class="ny">對的名詞</span>取代「彈窗」</h3>
       <p>「彈窗」在中文是模糊詞,涵蓋 Modal、Drawer、Toast、Popover 至少四種。直接說英文元件名,Claude 一次就懂。</p>
       <div class="prompt-compare">
         <div class="prompt-bad">幫我做個彈窗顯示成功訊息</div>
-        <div class="prompt-good">在右上角加一個 toast,顯示「儲存成功」,3 秒後自動消失</div>
+        <div class="prompt-good">用 React 做 Toast 系統:ToastProvider + useToast() hook。toast(\"儲存成功\", \"success\") 後 setTimeout 3 秒移除。右上角 fixed 定位。</div>
       </div>
-      <button class="copy-good" onclick="copyText(this,'在右上角加一個 toast,顯示「儲存成功」,3 秒後自動消失')">複製好 prompt</button>
+      <button class="copy-good" onclick="copyText(this,'用 React 做 Toast 系統:ToastProvider + useToast() hook。toast(\"儲存成功\", \"success\") 後 setTimeout 3 秒移除。右上角 fixed 定位。')">複製好 prompt</button>
     </div>
 
-    <div class="principle">
+    <div class="principle reveal-stagger">
       <span class="principle-num">RULE 02</span>
       <h3>指定<span class="ny">狀態與行為</span></h3>
       <p>UI 元件有多種狀態:default / hover / active / disabled / loading。明確說明你要哪些狀態,以及點擊後會發生什麼。</p>
       <div class="prompt-compare">
         <div class="prompt-bad">做一個提交按鈕</div>
-        <div class="prompt-good">primary button,文字「送出」。disabled 時變灰不可點;點擊變 loading(顯示 spinner),完成後變綠色打勾</div>
+        <div class="prompt-good">React Button 元件,Props: { variant: \"primary\", loading, disabled }。loading 時 disabled + 內部顯示 Spinner;success 狀態 useState 切換圖示。</div>
       </div>
-      <button class="copy-good" onclick="copyText(this,'primary button,文字「送出」。disabled 時變灰不可點;點擊變 loading(顯示 spinner),完成後變綠色打勾')">複製好 prompt</button>
+      <button class="copy-good" onclick="copyText(this,'React Button 元件,Props: { variant: \"primary\", loading, disabled }。loading 時 disabled + 內部顯示 Spinner;success 狀態 useState 切換圖示。')">複製好 prompt</button>
     </div>
 
-    <div class="principle">
+    <div class="principle reveal-stagger">
       <span class="principle-num">RULE 03</span>
       <h3>標明<span class="ny">位置、尺寸、邊距</span></h3>
       <p>用具體單位(px、rem、%)和位置(top-right、fixed bottom、sticky)。Claude 對視覺的想像需要錨點。</p>
       <div class="prompt-compare">
         <div class="prompt-bad">在側邊放一個側邊欄</div>
-        <div class="prompt-good">左側固定 240px 寬的 sidebar,內容垂直捲動,底部固定一個 64px 高的使用者資訊區</div>
+        <div class="prompt-good">React Sidebar 元件:position: sticky + h-screen,寬 240px。內部 flex-col,主區 flex-1 overflow-y-auto,底部 footer 固定 64px。</div>
       </div>
-      <button class="copy-good" onclick="copyText(this,'左側固定 240px 寬的 sidebar,內容垂直捲動,底部固定一個 64px 高的使用者資訊區')">複製好 prompt</button>
+      <button class="copy-good" onclick="copyText(this,'React Sidebar 元件:position: sticky + h-screen,寬 240px。內部 flex-col,主區 flex-1 overflow-y-auto,底部 footer 固定 64px。')">複製好 prompt</button>
     </div>
 
-    <div class="principle">
+    <div class="principle reveal-stagger">
       <span class="principle-num">RULE 04</span>
       <h3>提供<span class="ny">風格參考</span></h3>
       <p>說明設計風格(brutalist、minimal、editorial、glassmorphism),或舉產品為例(像 Linear、像 Notion)。比形容詞更精準。</p>
       <div class="prompt-compare">
         <div class="prompt-bad">設計感一點、好看一點</div>
-        <div class="prompt-good">Cyberpunk 風格,黑底配青色螢光,等寬字 + Orbitron 標題,參考 Cyberpunk 2077 的 UI</div>
+        <div class="prompt-good">React + Tailwind 做 Cyberpunk 風 UI。bg-[#05060a] + text-[#00f0ff] 配色,font-mono 等寬字 + Google Fonts Orbitron 標題,參考 Cyberpunk 2077。</div>
       </div>
-      <button class="copy-good" onclick="copyText(this,'Cyberpunk 風格,黑底配青色螢光,等寬字 + Orbitron 標題,參考 Cyberpunk 2077 的 UI')">複製好 prompt</button>
+      <button class="copy-good" onclick="copyText(this,'React + Tailwind 做 Cyberpunk 風 UI。bg-[#05060a] + text-[#00f0ff] 配色,font-mono 等寬字 + Google Fonts Orbitron 標題,參考 Cyberpunk 2077。')">複製好 prompt</button>
     </div>
 
-    <div class="principle">
+    <div class="principle reveal-stagger">
       <span class="principle-num">RULE 05</span>
       <h3>聲明<span class="ny">技術棧與限制</span></h3>
       <p>框架(React/Vue/HTML)、UI 庫(shadcn、Tailwind)、瀏覽器相容性、無障礙(a11y)、dark mode 需求——前置說清楚。</p>
       <div class="prompt-compare">
         <div class="prompt-bad">幫我做一個下拉選單</div>
-        <div class="prompt-good">React + TS + Tailwind,做可搜尋的 combobox,支援鍵盤導覽(↑↓ Enter Esc),符合 ARIA 規範</div>
+        <div class="prompt-good">React 18 + TS + Tailwind,實作 Combobox 元件。useState(query, isOpen, highlightIdx) + onKeyDown 處理 ↑↓ Enter Esc。可用 downshift 或 react-aria 加速。符合 WAI-ARIA combobox。</div>
       </div>
-      <button class="copy-good" onclick="copyText(this,'React + TS + Tailwind,做可搜尋的 combobox,支援鍵盤導覽(↑↓ Enter Esc),符合 ARIA 規範')">複製好 prompt</button>
+      <button class="copy-good" onclick="copyText(this,'React 18 + TS + Tailwind,實作 Combobox 元件。useState(query, isOpen, highlightIdx) + onKeyDown 處理 ↑↓ Enter Esc。可用 downshift 或 react-aria 加速。符合 WAI-ARIA combobox。')">複製好 prompt</button>
     </div>
 
-    <div class="principle">
+    <div class="principle reveal-stagger">
       <span class="principle-num">RULE 06</span>
       <h3>展示<span class="ny">內容範例</span></h3>
       <p>具體的資料、文字、圖片描述能讓 Claude 一次到位。不要只說「卡片列表」,給出實際的卡片內容。</p>
       <div class="prompt-compare">
         <div class="prompt-bad">做一組產品卡片</div>
-        <div class="prompt-good">3 張產品卡並排,每張含縮圖、商品名(粗體 18px)、價格(NT$1,280,青色)、「加入購物車」按鈕。資料用:咖啡豆/馬克杯/濾紙</div>
+        <div class="prompt-good">React + Tailwind,做 ProductCard.tsx,用 grid grid-cols-3 排列三張。Props: { product: { img, name, price } }。資料先 hardcode 三個物件 [咖啡豆, 馬克杯, 濾紙],日後換成 API。</div>
       </div>
-      <button class="copy-good" onclick="copyText(this,'3 張產品卡並排,每張含縮圖、商品名(粗體 18px)、價格(NT$1,280,青色)、「加入購物車」按鈕。資料用:咖啡豆/馬克杯/濾紙')">複製好 prompt</button>
+      <button class="copy-good" onclick="copyText(this,'React + Tailwind,做 ProductCard.tsx,用 grid grid-cols-3 排列三張。Props: { product: { img, name, price } }。資料先 hardcode 三個物件 [咖啡豆, 馬克杯, 濾紙],日後換成 API。')">複製好 prompt</button>
     </div>
 
   </div>
@@ -2298,36 +2716,256 @@ footer .colophon .c{color:var(--cyan)}
 
 <span class="field">【用途】</span> <span class="var">這個元件解決什麼問題?觸發時機?</span>
 
+<span class="field">【React 元件設計】</span>
+  <span class="comment">- Props:</span> <span class="var">{ open, onClose, title, children }</span>
+  <span class="comment">- State:</span> <span class="var">useState(value) / useReducer 處理複雜狀態</span>
+  <span class="comment">- Refs:</span> <span class="var">useRef 取得 DOM 或保留可變值</span>
+  <span class="comment">- Effects:</span> <span class="var">useEffect 監聽事件、清理 setTimeout</span>
+  <span class="comment">- Context:</span> <span class="var">需要全域共享時用 useContext</span>
+  <span class="comment">- Custom hooks:</span> <span class="var">useDebounce, useLocalStorage, useMediaQuery...</span>
+
 <span class="field">【視覺】</span>
   <span class="comment">- 位置:</span><span class="var">top-right / center / fixed bottom...</span>
   <span class="comment">- 尺寸:</span><span class="var">寬 400px,高自適應內容</span>
-  <span class="comment">- 風格:</span><span class="var">minimal / brutalist / cyberpunk...</span>
-  <span class="comment">- 顏色:</span><span class="var">主色 #00f0ff,背景 #05060a</span>
+  <span class="comment">- 樣式:</span><span class="var">Tailwind / CSS Modules / styled-components</span>
+  <span class="comment">- 動畫:</span><span class="var">CSS transition / framer-motion AnimatePresence</span>
 
 <span class="field">【內容】</span>
   <span class="comment">- 標題:</span><span class="var">"確認刪除"</span>
   <span class="comment">- 內文:</span><span class="var">"此操作無法復原"</span>
-  <span class="comment">- 按鈕:</span><span class="var">主要「刪除」(紅)、次要「取消」</span>
+  <span class="comment">- 按鈕:</span><span class="var">主要「刪除」(red), 次要「取消」</span>
 
-<span class="field">【狀態與互動】</span>
-  <span class="comment">- 狀態:</span><span class="var">default / hover / loading / disabled</span>
-  <span class="comment">- 點擊主按鈕後:</span><span class="var">spinner → toast → 關閉</span>
-  <span class="comment">- 按 Esc / 點背景:</span><span class="var">關閉</span>
+<span class="field">【行為】</span>
+  <span class="comment">- 受控 vs 非受控:</span><span class="var">controlled (value + onChange) 優先</span>
+  <span class="comment">- 點擊 confirm:</span><span class="var">props.onConfirm?.() → 父層處理</span>
+  <span class="comment">- Esc / 點背景:</span><span class="var">useEffect 監聽 keydown,呼叫 onClose</span>
 
 <span class="field">【技術】</span>
   <span class="comment">- 框架:</span><span class="var">React 18 + TypeScript</span>
-  <span class="comment">- 樣式:</span><span class="var">Tailwind CSS</span>
-  <span class="comment">- 無障礙:</span><span class="var">符合 WAI-ARIA dialog 規範</span>
+  <span class="comment">- 樣式:</span><span class="var">Tailwind CSS (或 CSS Modules)</span>
+  <span class="comment">- 無障礙:</span><span class="var">符合 WAI-ARIA dialog 規範,focus trap</span>
+  <span class="comment">- Portal:</span><span class="var">createPortal 渲染到 document.body</span>
+  <span class="comment">- forwardRef:</span><span class="var">需要時用,讓父層能取得 ref</span>
 
-<span class="field">【參考】</span> <span class="var">類似 Linear 的刪除確認框</span></pre>
+<span class="field">【參考】</span> <span class="var">類似 shadcn/ui 的 Dialog、Radix UI Primitives</span></pre>
     </div>
   </div>
 </section>
 
-<!-- ===== SECTION 05 - CLI ===== -->
-<section class="section cli-section" id="cli">
+<!-- ===== SECTION 05 - REACT CODE EXAMPLES ===== -->
+<section class="section prompt-section reveal" id="react">
   <div class="section-head">
     <div class="section-num">05</div>
+    <div class="titles">
+      <h2>REACT.<span class="ny">CODE</span></h2>
+      <div class="sub">// 三個經典元件的實際 React 18 寫法 · 直接複製可跑</div>
+    </div>
+    <div class="id">
+      DIR::/react<br>
+      <span class="live">3 PATTERNS · COPY READY</span>
+    </div>
+  </div>
+
+  <div class="tagline">
+    "Hooks are like cyberware. Powerful, but learn the rules first."
+    <span class="src">Choom · 給新手 Netrunner 的建議</span>
+  </div>
+
+  <div class="cli-grid">
+
+    <div class="cli-card reveal-stagger">
+      <div class="cli-card-header"><span class="num">01</span> Modal 元件(用 Portal + Esc 監聽)</div>
+      <div class="cli-card-body">
+        <p>最常被誤解的元件——必須用 <code>createPortal</code> 跳出父層,並監聽 Esc 鍵與背景點擊。</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c">// Modal.tsx</span>
+<span class="k">import</span> { useEffect } <span class="k">from</span> <span class="s">'react'</span>;
+<span class="k">import</span> { createPortal } <span class="k">from</span> <span class="s">'react-dom'</span>;
+
+<span class="k">type</span> Props = {
+  open: <span class="f">boolean</span>;
+  onClose: () =&gt; <span class="f">void</span>;
+  onConfirm?: () =&gt; <span class="f">void</span>;
+  title: <span class="f">string</span>;
+  children: React.ReactNode;
+};
+
+<span class="k">export function</span> <span class="f">Modal</span>({ open, onClose, onConfirm, title, children }: Props) {
+  <span class="c">// Esc 鍵全域監聽</span>
+  useEffect(() =&gt; {
+    <span class="k">if</span> (!open) <span class="k">return</span>;
+    <span class="k">const</span> onKey = (e: KeyboardEvent) =&gt; {
+      <span class="k">if</span> (e.key === <span class="s">'Escape'</span>) onClose();
+    };
+    window.addEventListener(<span class="s">'keydown'</span>, onKey);
+    <span class="k">return</span> () =&gt; window.removeEventListener(<span class="s">'keydown'</span>, onKey);
+  }, [open, onClose]);
+
+  <span class="k">if</span> (!open) <span class="k">return null</span>;
+
+  <span class="k">return</span> createPortal(
+    &lt;<span class="f">div</span> className=<span class="s">"backdrop"</span> onClick={onClose}&gt;
+      &lt;<span class="f">div</span> className=<span class="s">"modal"</span> onClick={(e) =&gt; e.stopPropagation()}&gt;
+        &lt;<span class="f">h3</span>&gt;{title}&lt;/<span class="f">h3</span>&gt;
+        {children}
+        &lt;<span class="f">button</span> onClick={onClose}&gt;取消&lt;/<span class="f">button</span>&gt;
+        &lt;<span class="f">button</span> onClick={() =&gt; { onConfirm?.(); onClose(); }}&gt;確認&lt;/<span class="f">button</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;,
+    document.body
+  );
+}</pre>
+        <ul>
+          <li><code>createPortal</code> 跳出父層,避免被 overflow:hidden 截斷</li>
+          <li><code>e.stopPropagation()</code> 防止點 modal 內部誤關</li>
+          <li>useEffect cleanup 清掉 listener,避免記憶體洩漏</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card reveal-stagger">
+      <div class="cli-card-header"><span class="num">02</span> Toast 系統(Provider + useToast hook)</div>
+      <div class="cli-card-body">
+        <p>用 Context 模式,任何元件呼叫 <code>useToast()</code> 就能跳通知。</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c">// ToastProvider.tsx</span>
+<span class="k">import</span> { createContext, useContext, useState, useCallback } <span class="k">from</span> <span class="s">'react'</span>;
+
+<span class="k">type</span> Toast = { id: <span class="f">string</span>; msg: <span class="f">string</span>; type: <span class="s">'success'</span>|<span class="s">'error'</span> };
+<span class="k">const</span> Ctx = createContext&lt;((msg: <span class="f">string</span>, type?: <span class="f">string</span>) =&gt; <span class="f">void</span>) | <span class="k">null</span>&gt;(<span class="k">null</span>);
+
+<span class="k">export function</span> <span class="f">ToastProvider</span>({ children }) {
+  <span class="k">const</span> [toasts, setToasts] = useState&lt;Toast[]&gt;([]);
+
+  <span class="k">const</span> show = useCallback((msg, type = <span class="s">'success'</span>) =&gt; {
+    <span class="k">const</span> id = crypto.randomUUID();
+    setToasts((t) =&gt; [...t, { id, msg, type }]);
+    setTimeout(() =&gt; setToasts((t) =&gt; t.filter((x) =&gt; x.id !== id)), 3000);
+  }, []);
+
+  <span class="k">return</span> (
+    &lt;Ctx.Provider value={show}&gt;
+      {children}
+      &lt;<span class="f">div</span> className=<span class="s">"toast-container"</span>&gt;
+        {toasts.map((t) =&gt; (
+          &lt;<span class="f">div</span> key={t.id} className={<span class="s">`toast ${t.type}`</span>}&gt;{t.msg}&lt;/<span class="f">div</span>&gt;
+        ))}
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/Ctx.Provider&gt;
+  );
+}
+
+<span class="k">export const</span> <span class="f">useToast</span> = () =&gt; {
+  <span class="k">const</span> ctx = useContext(Ctx);
+  <span class="k">if</span> (!ctx) <span class="k">throw new</span> <span class="f">Error</span>(<span class="s">'useToast 必須包在 &lt;ToastProvider&gt; 內'</span>);
+  <span class="k">return</span> ctx;
+};
+
+<span class="c">// 使用</span>
+<span class="k">function</span> <span class="f">SaveButton</span>() {
+  <span class="k">const</span> toast = useToast();
+  <span class="k">return</span> &lt;<span class="f">button</span> onClick={() =&gt; toast(<span class="s">'已儲存'</span>, <span class="s">'success'</span>)}&gt;儲存&lt;/<span class="f">button</span>&gt;;
+}</pre>
+        <ul>
+          <li>Context 共享 toast 函式,避免 props drilling</li>
+          <li><code>useCallback</code> 保證函式 reference 穩定,不會觸發子元件重渲染</li>
+          <li>throw 確保開發階段就抓到 Provider 沒包到的錯誤</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card reveal-stagger">
+      <div class="cli-card-header"><span class="num">03</span> 自訂 Hooks(useDebounce / useLocalStorage)</div>
+      <div class="cli-card-body">
+        <p>把重複邏輯抽成 hook,跨元件重用。命名一律 <code>use*</code>。</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c">// hooks.ts</span>
+<span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">'react'</span>;
+
+<span class="c">// 1. useDebounce:延遲更新值,常用於搜尋輸入</span>
+<span class="k">export function</span> <span class="f">useDebounce</span>&lt;T&gt;(value: T, delay = 300): T {
+  <span class="k">const</span> [debounced, setDebounced] = useState(value);
+  useEffect(() =&gt; {
+    <span class="k">const</span> id = setTimeout(() =&gt; setDebounced(value), delay);
+    <span class="k">return</span> () =&gt; clearTimeout(id);
+  }, [value, delay]);
+  <span class="k">return</span> debounced;
+}
+
+<span class="c">// 2. useLocalStorage:雙向同步 localStorage</span>
+<span class="k">export function</span> <span class="f">useLocalStorage</span>&lt;T&gt;(key: <span class="f">string</span>, initial: T) {
+  <span class="k">const</span> [value, setValue] = useState&lt;T&gt;(() =&gt; {
+    <span class="k">try</span> {
+      <span class="k">const</span> raw = localStorage.getItem(key);
+      <span class="k">return</span> raw ? JSON.parse(raw) : initial;
+    } <span class="k">catch</span> { <span class="k">return</span> initial; }
+  });
+  useEffect(() =&gt; {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+  <span class="k">return</span> [value, setValue] <span class="k">as const</span>;
+}
+
+<span class="c">// 3. useMediaQuery:響應式偵測</span>
+<span class="k">export function</span> <span class="f">useMediaQuery</span>(query: <span class="f">string</span>) {
+  <span class="k">const</span> [matches, setMatches] = useState(<span class="k">false</span>);
+  useEffect(() =&gt; {
+    <span class="k">const</span> m = window.matchMedia(query);
+    setMatches(m.matches);
+    <span class="k">const</span> onChange = (e: MediaQueryListEvent) =&gt; setMatches(e.matches);
+    m.addEventListener(<span class="s">'change'</span>, onChange);
+    <span class="k">return</span> () =&gt; m.removeEventListener(<span class="s">'change'</span>, onChange);
+  }, [query]);
+  <span class="k">return</span> matches;
+}
+
+<span class="c">// 使用</span>
+<span class="k">const</span> [query, setQuery] = useState(<span class="s">''</span>);
+<span class="k">const</span> debouncedQuery = useDebounce(query, 300);
+<span class="k">const</span> isMobile = useMediaQuery(<span class="s">'(max-width: 768px)'</span>);
+<span class="k">const</span> [dark, setDark] = useLocalStorage(<span class="s">'dark'</span>, <span class="k">false</span>);</pre>
+        <ul>
+          <li>泛型 <code>&lt;T&gt;</code> 保留型別資訊,使用端會自動推導</li>
+          <li>useEffect cleanup 一律寫,避免 stale closure 與洩漏</li>
+          <li>用 <code>as const</code> 鎖定 tuple 型別,destructure 才不會變 union</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cli-card reveal-stagger">
+      <div class="cli-card-header"><span class="num">04</span> 推薦工具鏈</div>
+      <div class="cli-card-body">
+        <p>給 Claude 開新專案時,可以指定這套組合(2026 主流):</p>
+<pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 建專案</span>
+<span class="k">npm</span> create vite@latest my-app -- --template react-ts
+<span class="k">cd</span> my-app && <span class="k">npm</span> install
+
+<span class="c"># 必裝套件</span>
+<span class="k">npm</span> i tailwindcss class-variance-authority clsx
+<span class="k">npm</span> i @floating-ui/react       <span class="c"># 浮動定位 (Popover/Tooltip)</span>
+<span class="k">npm</span> i framer-motion             <span class="c"># 動畫</span>
+<span class="k">npm</span> i react-router-dom          <span class="c"># 路由</span>
+<span class="k">npm</span> i @tanstack/react-query     <span class="c"># 資料抓取/快取</span>
+<span class="k">npm</span> i zustand                   <span class="c"># 輕量全域狀態</span>
+<span class="k">npm</span> i react-hook-form zod       <span class="c"># 表單 + 驗證</span>
+
+<span class="c"># 推薦元件庫(挑一個)</span>
+<span class="k">npx</span> shadcn@latest init           <span class="c"># shadcn/ui (拷貝源碼到專案)</span>
+<span class="k">npm</span> i @radix-ui/themes           <span class="c"># Radix(headless 元件)</span>
+<span class="k">npm</span> i @mantine/core              <span class="c"># Mantine(電池全包)</span></pre>
+        <ul>
+          <li><code>shadcn/ui</code>:拷貝源碼進專案,可改可控,2026 最熱</li>
+          <li><code>Radix UI</code>:純邏輯無樣式,搭 Tailwind 用</li>
+          <li><code>@tanstack/react-query</code>:取代 Redux 處理 server state</li>
+          <li><code>zustand</code>:取代 Redux 處理 client state,API 極簡</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== SECTION 06 - CLI ===== -->
+<section class="section cli-section reveal" id="cli">
+  <div class="section-head">
+    <div class="section-num">06</div>
     <div class="titles">
       <h2>CLAUDE.<span class="ny">CODE_CLI</span></h2>
       <div class="sub">// 每個程式碼區塊都能一鍵複製</div>
@@ -2345,7 +2983,7 @@ footer .colophon .c{color:var(--cyan)}
 
   <div class="cli-grid">
 
-    <div class="cli-card">
+    <div class="cli-card reveal-stagger">
       <div class="cli-card-header"><span class="num">01</span> 安裝 &amp; 登入</div>
       <div class="cli-card-body">
         <p>Claude Code 是 Anthropic 的官方終端機編碼代理。推薦原生二進位,不需 Node.js。</p>
@@ -2371,7 +3009,7 @@ claude setup-token</pre>
       </div>
     </div>
 
-    <div class="cli-card">
+    <div class="cli-card reveal-stagger">
       <div class="cli-card-header"><span class="num">02</span> 啟動方式</div>
       <div class="cli-card-body">
         <p>互動模式適合來回對話,印出模式(<code>-p</code>)適合腳本與一次性查詢。</p>
@@ -2400,7 +3038,7 @@ claude <span class="f">--resume</span> <span class="s">"auth-refactor"</span></p
       </div>
     </div>
 
-    <div class="cli-card">
+    <div class="cli-card reveal-stagger">
       <div class="cli-card-header"><span class="num">03</span> 模型 &amp; 思考強度</div>
       <div class="cli-card-body">
 <pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 指定模型</span>
@@ -2424,7 +3062,7 @@ claude <span class="f">-p</span> <span class="f">--fallback-model</span> <span c
       </div>
     </div>
 
-    <div class="cli-card">
+    <div class="cli-card reveal-stagger">
       <div class="cli-card-header"><span class="num">04</span> 權限模式</div>
       <div class="cli-card-body">
 <pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># default - 每個敏感動作都詢問</span>
@@ -2449,7 +3087,7 @@ claude <span class="f">--dangerously-skip-permissions</span></pre>
       </div>
     </div>
 
-    <div class="cli-card">
+    <div class="cli-card reveal-stagger">
       <div class="cli-card-header"><span class="num">05</span> 工具控制</div>
       <div class="cli-card-body">
 <pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># 只允許特定工具</span>
@@ -2474,7 +3112,7 @@ claude <span class="f">--tools</span> <span class="s">"Read,Grep,Glob"</span></p
       </div>
     </div>
 
-    <div class="cli-card">
+    <div class="cli-card reveal-stagger">
       <div class="cli-card-header"><span class="num">06</span> 輸出格式(腳本化)</div>
       <div class="cli-card-body">
 <pre><button class="copy-btn" onclick="copyPre(this)">⧉ COPY</button><span class="c"># JSON 輸出</span>
@@ -2499,7 +3137,7 @@ claude <span class="f">-p</span> <span class="f">--max-turns</span> <span class=
       </div>
     </div>
 
-    <div class="cli-card">
+    <div class="cli-card reveal-stagger">
       <div class="cli-card-header"><span class="num">07</span> 斜線指令(互動內)</div>
       <div class="cli-card-body">
         <p>在 <code>claude</code> 互動模式裡看到 <code>&gt;</code> 提示符後輸入。</p>
@@ -2526,7 +3164,7 @@ claude <span class="f">-p</span> <span class="f">--max-turns</span> <span class=
       </div>
     </div>
 
-    <div class="cli-card">
+    <div class="cli-card reveal-stagger">
       <div class="cli-card-header"><span class="num">08</span> 背景任務</div>
       <div class="cli-card-body">
         <p>長時間任務丟背景,前景繼續工作。</p>
@@ -2583,15 +3221,16 @@ claude respawn <span class="s">7c5dcf5d</span></pre>
     </div>
     <div class="terminal-input">
       <span class="ps">$</span>
-      <input type="text" id="termInput" placeholder="輸入指令,按 Enter 執行..." onkeydown="if(event.key==='Enter')termRun(this.value)">
+      <input type="text" id="termInput" placeholder="輸入指令,按 Enter 執行..."
+             onkeydown="if(event.key==='Enter')termRun(this.value); else if(event.key.length===1)sfx('type')">
     </div>
   </div>
 </section>
 
 <!-- ===== SECTION 06 - CHEATSHEET ===== -->
-<section class="section" id="cheat">
+<section class="section reveal" id="cheat">
   <div class="section-head">
-    <div class="section-num">06</div>
+    <div class="section-num">07</div>
     <div class="titles">
       <h2>QUICK.<span class="ny">REFERENCE</span></h2>
       <div class="sub">// 速查表 · 列印貼螢幕邊</div>
@@ -2691,6 +3330,12 @@ claude respawn <span class="s">7c5dcf5d</span></pre>
   <span id="johnnyText">Stop calling me Johnny. I'm Silverhand.</span>
 </div>
 
+<!-- ===== SFX TOGGLE ===== -->
+<button class="sfx-toggle" id="sfxToggle" onclick="toggleSfx()" title="音效開關">
+  <span class="sfx-icon">◉</span>
+  <span class="sfx-label">SFX OFF</span>
+</button>
+
 <!-- ===== FOOTER ===== -->
 <footer>
   <p class="quote">
@@ -2707,7 +3352,7 @@ claude respawn <span class="s">7c5dcf5d</span></pre>
     <button class="reset-btn" onclick="resetProgress()">// RESET ALL</button>
   </div>
   <div class="colophon">
-    <span class="c">UI://GLOSSARY.SYS</span> · INTERACTIVE EDITION v4 · 2077<br>
+    <span class="c">UI://GLOSSARY.SYS</span> · REACT EDITION v5 · 2077<br>
     SET IN ORBITRON &amp; RAJDHANI &amp; SHARE TECH MONO<br>
     "WAKE THE FUCK UP, SAMURAI."<br>
     // END OF TRANSMISSION //
@@ -2715,6 +3360,561 @@ claude respawn <span class="s">7c5dcf5d</span></pre>
 </footer>
 
 <script>
+/* ===================== MATRIX RAIN ===================== */
+(function() {
+  const canvas = document.getElementById('matrix-rain');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let cols, drops, charset;
+  const fontSize = 14;
+  // 包含日文片假名、中文、數字、特殊符號 — 真正的 2077 風
+  charset = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEFΦΨΩ█▓▒░';
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    cols = Math.floor(canvas.width / fontSize);
+    drops = new Array(cols).fill(0).map(() => Math.random() * -100);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    // 淡出之前的字
+    ctx.fillStyle = 'rgba(5, 6, 10, 0.08)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = fontSize + "px 'Share Tech Mono', monospace";
+    for (let i = 0; i < cols; i++) {
+      const char = charset[Math.floor(Math.random() * charset.length)];
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+      // 第一個字較亮(白色),後面用青色
+      const isHead = Math.random() > 0.97;
+      ctx.fillStyle = isHead ? '#fff' : (Math.random() > 0.85 ? '#fcee0a' : '#00f0ff');
+      ctx.fillText(char, x, y);
+      // 觸底重置
+      if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i] += 0.5 + Math.random() * 0.5;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ===================== 飄浮粒子 ===================== */
+(function() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (12 + Math.random() * 18) + 's';
+    p.style.animationDelay = (-Math.random() * 30) + 's';
+    p.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+    if (Math.random() > 0.7) p.style.background = 'var(--yellow)';
+    if (Math.random() > 0.9) p.style.background = 'var(--magenta)';
+    container.appendChild(p);
+  }
+})();
+
+/* ===================== CURSOR GLOW ===================== */
+(function() {
+  if (!matchMedia('(hover:hover)').matches) return;
+  const glow = document.getElementById('cursorGlow');
+  const dot = document.getElementById('cursorDot');
+  let x = 0, y = 0, gx = 0, gy = 0;
+  window.addEventListener('mousemove', (e) => {
+    x = e.clientX; y = e.clientY;
+    dot.style.left = x + 'px';
+    dot.style.top = y + 'px';
+  });
+  function animate() {
+    gx += (x - gx) * 0.15;
+    gy += (y - gy) * 0.15;
+    glow.style.left = gx + 'px';
+    glow.style.top = gy + 'px';
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // hover 在可點元素上時放大
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest('button, a, .term, .chip, .cb-item, .rd-item, input, .tooltip-trigger, .dropdown-trigger')) {
+      glow.classList.add('hover');
+    }
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest('button, a, .term, .chip, .cb-item, .rd-item, input, .tooltip-trigger, .dropdown-trigger')) {
+      glow.classList.remove('hover');
+    }
+  });
+  window.addEventListener('mousedown', () => {
+    glow.classList.add('click');
+    setTimeout(() => glow.classList.remove('click'), 300);
+  });
+})();
+
+/* ===================== HUD 即時資料 ===================== */
+(function() {
+  const timeEl = document.getElementById('hudTime');
+  const cycEl = document.getElementById('hudCyc');
+  const fpsEl = document.getElementById('hudFps');
+  const latEl = document.getElementById('hudLat');
+  const lonEl = document.getElementById('hudLon');
+  let cyc = 0;
+  let lastFrame = performance.now();
+  let frames = 0, lastFpsUpdate = lastFrame;
+
+  function update() {
+    const now = new Date();
+    timeEl.textContent = now.toTimeString().slice(0, 8);
+    cyc++;
+    if (cyc % 30 === 0) cycEl.textContent = cyc.toString().padStart(6, '0');
+    // 隨機微幅變動 GPS
+    if (cyc % 60 === 0) {
+      const lat = (37.7749 + (Math.random() - 0.5) * 0.002).toFixed(4);
+      const lon = (-122.4194 + (Math.random() - 0.5) * 0.002).toFixed(4);
+      latEl.textContent = lat;
+      lonEl.textContent = lon;
+    }
+
+    // FPS 計算
+    frames++;
+    const t = performance.now();
+    if (t - lastFpsUpdate > 500) {
+      const fps = Math.round((frames * 1000) / (t - lastFpsUpdate));
+      fpsEl.textContent = fps;
+      frames = 0;
+      lastFpsUpdate = t;
+    }
+    requestAnimationFrame(update);
+  }
+  update();
+})();
+
+/* ===================== INTERSECTION OBSERVER REVEAL ===================== */
+(function() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        if (entry.target.classList.contains('reveal')) {
+          setTimeout(() => entry.target.classList.add('scan-done'), 1200);
+        }
+        // stagger children
+        const children = entry.target.querySelectorAll('.reveal-stagger:not(.visible)');
+        children.forEach((c, i) => {
+          setTimeout(() => c.classList.add('visible'), i * 60);
+        });
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // 個別 stagger 元素也單獨監聽
+  const itemObs = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        itemObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.reveal-stagger').forEach(el => itemObs.observe(el));
+})();
+
+/* ===================== 詞彙卡 3D TILT ===================== */
+(function() {
+  if (!matchMedia('(hover:hover)').matches) return;
+  document.querySelectorAll('.term').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const rotX = ((cy - y) / cy) * 6; // 最大傾斜 6 度
+      const rotY = ((x - cx) / cx) * 6;
+      card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(0)`;
+      const gloss = card.querySelector('.gloss');
+      if (gloss) {
+        gloss.style.setProperty('--mx', (x / rect.width * 100) + '%');
+        gloss.style.setProperty('--my', (y / rect.height * 100) + '%');
+      }
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+})();
+
+/* ===================== 打字機 HERO QUOTE ===================== */
+(function() {
+  const en = 'Wake the fuck up, Samurai. We have a city to burn.';
+  const zh = '// 起來吧,武士。我們有座城市要燒了。';
+  const enEl = document.getElementById('typedQuote');
+  const zhEl = document.getElementById('typedQuoteZh');
+  if (!enEl || !zhEl) return;
+  let i = 0, j = 0;
+  function typeEn() {
+    if (i < en.length) {
+      enEl.textContent = en.substring(0, i + 1);
+      i++;
+      setTimeout(typeEn, 50 + Math.random() * 50);
+    } else {
+      enEl.classList.add('done');
+      zhEl.classList.add('typewriter');
+      setTimeout(typeZh, 300);
+    }
+  }
+  function typeZh() {
+    if (j < zh.length) {
+      zhEl.textContent = zh.substring(0, j + 1);
+      j++;
+      setTimeout(typeZh, 80 + Math.random() * 60);
+    } else {
+      zhEl.classList.add('done');
+    }
+  }
+  setTimeout(typeEn, 800);
+})();
+
+/* ===================== HERO STATS COUNT-UP ===================== */
+(function() {
+  // 找到 hero-stats 內的數字 val,延遲後 count up
+  setTimeout(() => {
+    document.querySelectorAll('.hero-stats .val').forEach((el, idx) => {
+      const text = el.textContent.trim();
+      const num = parseFloat(text.replace(/[^\d.]/g, ''));
+      if (isNaN(num) || num === 0) return;
+      const suffix = text.replace(/[\d.]/g, '');
+      let v = 0;
+      el.classList.add('counting');
+      const dur = 1000;
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const cur = num * eased;
+        // 處理小數
+        if (text.includes('.')) el.textContent = cur.toFixed(3) + suffix;
+        else el.textContent = Math.round(cur) + suffix;
+        if (t < 1) requestAnimationFrame(step);
+        else {
+          el.textContent = text;
+          setTimeout(() => el.classList.remove('counting'), 300);
+        }
+      }
+      setTimeout(() => requestAnimationFrame(step), idx * 80);
+    });
+  }, 1500);
+})();
+
+/* ===================== 隨機 GLITCH FLASH ===================== */
+(function() {
+  const targets = document.querySelectorAll('.hero h1, .section-head h2');
+  function flash() {
+    const t = targets[Math.floor(Math.random() * targets.length)];
+    if (t && Math.random() > 0.3) {
+      t.classList.add('glitch-flash');
+      setTimeout(() => t.classList.remove('glitch-flash'), 600);
+    }
+    setTimeout(flash, 4000 + Math.random() * 6000);
+  }
+  setTimeout(flash, 5000);
+})();
+
+/* ===================== 音波視覺化(連動 SFX) ===================== */
+window.SfxViz = (function() {
+  const viz = document.getElementById('sfxViz');
+  if (!viz) return { trigger: () => {} };
+  const bars = viz.querySelectorAll('.vb');
+  let timeoutId = null;
+
+  function trigger() {
+    viz.classList.add('active');
+    bars.forEach((b, i) => {
+      const h = 4 + Math.random() * 36;
+      b.style.height = h + 'px';
+      // 階梯衰減
+      setTimeout(() => {
+        b.style.height = '2px';
+      }, 200 + Math.random() * 200);
+    });
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => viz.classList.remove('active'), 800);
+  }
+  return { trigger };
+})();
+
+
+/* ===== SFX SYSTEM (Web Audio synthesizer · 2077 style) ===== */
+const SFX_KEY = 'ui-glossary-v4-sfx';
+let sfxOn = false;
+let audioCtx = null;
+
+function initAudio() {
+  if (audioCtx) return audioCtx;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } catch (e) { audioCtx = null; }
+  return audioCtx;
+}
+
+function sfx(type) {
+  if (!sfxOn) return;
+  const ctx = initAudio();
+  if (!ctx) return;
+  // resume if suspended (autoplay policy)
+  if (ctx.state === 'suspended') ctx.resume();
+  const now = ctx.currentTime;
+  // 觸發音波視覺化
+  if (window.SfxViz) window.SfxViz.trigger();
+
+  if (type === 'beep') {
+    // 短促 UI 點擊音
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.04);
+    gain.gain.setValueAtTime(0.06, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now); osc.stop(now + 0.1);
+  }
+  else if (type === 'scan') {
+    // 義體掃描:由低頻往上 sweep
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.exponentialRampToValueAtTime(1760, now + 0.15);
+    gain.gain.setValueAtTime(0.05, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now); osc.stop(now + 0.22);
+  }
+  else if (type === 'glitch') {
+    // Relic 故障:低頻 buzz + 高頻碎裂 + 隨機跳頻
+    // Layer 1: 低頻嗡鳴(義體當機底噪)
+    const buzz = ctx.createOscillator();
+    const buzzGain = ctx.createGain();
+    const buzzFilter = ctx.createBiquadFilter();
+    buzz.type = 'sawtooth';
+    buzz.frequency.setValueAtTime(55, now);
+    buzz.frequency.linearRampToValueAtTime(48, now + 0.35);
+    buzzFilter.type = 'lowpass';
+    buzzFilter.frequency.value = 600;
+    buzzFilter.Q.value = 8;
+    buzzGain.gain.setValueAtTime(0.12, now);
+    buzzGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+    buzz.connect(buzzFilter).connect(buzzGain).connect(ctx.destination);
+    buzz.start(now); buzz.stop(now + 0.42);
+
+    // Layer 2: 高頻數位破碎(隨機跳頻的方波)
+    for (let i = 0; i < 8; i++) {
+      const t0 = now + i * 0.035;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      // 不規則跳頻,模擬 bit-crushed 訊號
+      const freq = 200 + Math.random() * 1800;
+      osc.frequency.setValueAtTime(freq, t0);
+      // 中段加入頻率漂移
+      osc.frequency.setValueAtTime(freq * (0.5 + Math.random()), t0 + 0.015);
+      gain.gain.setValueAtTime(0.05, t0);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.028);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0); osc.stop(t0 + 0.03);
+    }
+
+    // Layer 3: 白噪音脈衝(數位干擾)
+    const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.4, ctx.sampleRate);
+    const data = noiseBuf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      // 不均勻噪音,模擬訊號崩潰
+      data[i] = (Math.random() * 2 - 1) * (Math.random() > 0.7 ? 1 : 0.3);
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuf;
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.value = 2500;
+    noiseFilter.Q.value = 2;
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.08, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+    noise.connect(noiseFilter).connect(noiseGain).connect(ctx.destination);
+    noise.start(now); noise.stop(now + 0.4);
+  }
+  else if (type === 'relic') {
+    // V 的義體 Relic 故障:長一點、更不穩定、有迴授
+    // 不穩定載波 + 環形調變感
+    const carrier = ctx.createOscillator();
+    const mod = ctx.createOscillator();
+    const modGain = ctx.createGain();
+    const carrGain = ctx.createGain();
+    carrier.type = 'sawtooth';
+    carrier.frequency.setValueAtTime(120, now);
+    // 頻率往下崩潰
+    carrier.frequency.exponentialRampToValueAtTime(40, now + 0.6);
+    mod.type = 'square';
+    mod.frequency.setValueAtTime(30, now);
+    // 調變頻率隨機跳動(不穩定感)
+    mod.frequency.linearRampToValueAtTime(80, now + 0.2);
+    mod.frequency.linearRampToValueAtTime(15, now + 0.4);
+    mod.frequency.linearRampToValueAtTime(50, now + 0.6);
+    modGain.gain.value = 200;
+    mod.connect(modGain).connect(carrier.frequency);
+    carrGain.gain.setValueAtTime(0.1, now);
+    carrGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+    carrier.connect(carrGain).connect(ctx.destination);
+    carrier.start(now); carrier.stop(now + 0.72);
+    mod.start(now); mod.stop(now + 0.72);
+
+    // 上層數位碎屑
+    for (let i = 0; i < 12; i++) {
+      const t0 = now + i * 0.05 + Math.random() * 0.02;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = Math.random() > 0.5 ? 'square' : 'sawtooth';
+      osc.frequency.setValueAtTime(800 + Math.random() * 2400, t0);
+      gain.gain.setValueAtTime(0.04, t0);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.04);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0); osc.stop(t0 + 0.05);
+    }
+  }
+  else if (type === 'static') {
+    // 純訊號干擾雜訊:像收音機沒訊號 + 短促爆裂
+    const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate);
+    const data = noiseBuf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.6;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuf;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(2000, now);
+    filter.frequency.exponentialRampToValueAtTime(500, now + 0.25);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.1, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+    noise.connect(filter).connect(gain).connect(ctx.destination);
+    noise.start(now); noise.stop(now + 0.27);
+  }
+  else if (type === 'whoosh') {
+    // 抽屜滑入:低頻 sweep + 雜訊
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, now);
+    osc.frequency.linearRampToValueAtTime(40, now + 0.3);
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, now);
+    filter.frequency.exponentialRampToValueAtTime(80, now + 0.3);
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+    osc.connect(filter).connect(gain).connect(ctx.destination);
+    osc.start(now); osc.stop(now + 0.32);
+  }
+  else if (type === 'error') {
+    // 紅色警示:不和諧雙音
+    [220, 233].forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(f, now);
+      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.27);
+    });
+  }
+  else if (type === 'jack-in') {
+    // 接駁音:三個上升 beep
+    [523, 659, 988].forEach((f, i) => {
+      const t0 = now + i * 0.08;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(f, t0);
+      gain.gain.setValueAtTime(0.05, t0);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.1);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0); osc.stop(t0 + 0.12);
+    });
+  }
+  else if (type === 'coin') {
+    // 學會成就音:雙音上升
+    [659, 988].forEach((f, i) => {
+      const t0 = now + i * 0.06;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(f, t0);
+      gain.gain.setValueAtTime(0.06, t0);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0); osc.stop(t0 + 0.22);
+    });
+  }
+  else if (type === 'tick') {
+    // 切換音(極短)
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(2000, now);
+    gain.gain.setValueAtTime(0.03, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now); osc.stop(now + 0.03);
+  }
+  else if (type === 'type') {
+    // 終端機打字音
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(1200 + Math.random() * 400, now);
+    gain.gain.setValueAtTime(0.02, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now); osc.stop(now + 0.02);
+  }
+}
+
+function toggleSfx() {
+  sfxOn = !sfxOn;
+  try { localStorage.setItem(SFX_KEY, sfxOn ? '1' : '0'); } catch (e) {}
+  const btn = document.getElementById('sfxToggle');
+  if (sfxOn) {
+    btn.classList.add('on');
+    btn.querySelector('.sfx-label').textContent = 'SFX ON';
+    sfx('jack-in');
+  } else {
+    btn.classList.remove('on');
+    btn.querySelector('.sfx-label').textContent = 'SFX OFF';
+  }
+}
+
+function restoreSfx() {
+  try {
+    if (localStorage.getItem(SFX_KEY) === '1') {
+      sfxOn = true;
+      const btn = document.getElementById('sfxToggle');
+      btn.classList.add('on');
+      btn.querySelector('.sfx-label').textContent = 'SFX ON';
+    }
+  } catch (e) {}
+}
+
 /* ===== SCROLL PROGRESS ===== */
 window.addEventListener('scroll', () => {
   const h = document.documentElement;
@@ -2724,7 +3924,7 @@ window.addEventListener('scroll', () => {
 
 /* ===== STICKY NAV ACTIVE SECTION ===== */
 const navLinks = document.querySelectorAll('.sticky-nav .links a');
-const sections = ['overlay','input','layout','prompt','cli','cheat'].map(id => document.getElementById(id));
+const sections = ['overlay','input','layout','prompt','react','cli','cheat'].map(id => document.getElementById(id));
 window.addEventListener('scroll', () => {
   const y = window.scrollY + 120;
   let active = sections[0]?.id;
@@ -2742,13 +3942,15 @@ function showToast(msg, type) {
   t.className = 'toast' + (type ? ' ' + type : '');
   t.textContent = msg;
   c.appendChild(t);
+  sfx(type === 'error' ? 'error' : type === 'warn' ? 'glitch' : 'beep');
   setTimeout(() => t.remove(), 3000);
 }
 
 /* ===== MODAL ===== */
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id) { sfx('static'); document.getElementById(id).classList.add('open'); }
+function closeModal(id) { sfx('tick'); document.getElementById(id).classList.remove('open'); }
 function confirmDelete() {
+  sfx('error');
   closeModal('modalDemo');
   showToast('已刪除', 'error');
 }
@@ -2766,6 +3968,7 @@ document.getElementById('modalDemo').addEventListener('click', e => {
 
 /* ===== DRAWER ===== */
 function openDrawer() {
+  sfx('whoosh');
   document.getElementById('drawerBackdrop').classList.add('open');
   document.getElementById('drawerPanel').classList.add('open');
 }
@@ -2776,6 +3979,7 @@ function closeDrawer() {
 
 /* ===== BOTTOM SHEET ===== */
 function openSheet() {
+  sfx('whoosh');
   document.getElementById('sheetBackdrop').classList.add('open');
   document.getElementById('sheetPanel').classList.add('open');
 }
@@ -2794,7 +3998,7 @@ function togglePopover(e, btn) {
   const p = btn.parentElement.querySelector('[data-popover]');
   const isOpen = p.classList.contains('open');
   closeAllPopovers();
-  if (!isOpen) p.classList.add('open');
+  if (!isOpen) { sfx('beep'); p.classList.add('open'); }
 }
 function closeAllPopovers() {
   document.querySelectorAll('[data-popover].open').forEach(p => p.classList.remove('open'));
@@ -2805,6 +4009,7 @@ document.addEventListener('click', e => {
 
 /* ===== TOGGLE ===== */
 function toggleSwitch(el) {
+  sfx('tick');
   el.classList.toggle('on');
   const status = el.parentElement.querySelector('.status');
   if (el.classList.contains('on')) {
@@ -2818,15 +4023,18 @@ function toggleSwitch(el) {
 
 /* ===== RADIO ===== */
 function pickRadio(el) {
+  sfx('tick');
   el.parentElement.querySelectorAll('.rd-item').forEach(i => i.classList.remove('checked'));
   el.classList.add('checked');
 }
 
 /* ===== DROPDOWN ===== */
 function toggleDropdown(btn) {
+  sfx('beep');
   btn.parentElement.classList.toggle('open');
 }
 function pickDropdown(opt, val) {
+  sfx('tick');
   const dd = opt.closest('.dropdown-demo');
   dd.querySelector('.lbl').textContent = val;
   dd.classList.remove('open');
@@ -2844,6 +4052,7 @@ const tabContents = {
   c: '> Mantis Blades · Smart Pistol · Cyberdeck'
 };
 function pickTab(btn, id) {
+  sfx('tick');
   btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tabContent').textContent = tabContents[id];
@@ -2851,6 +4060,7 @@ function pickTab(btn, id) {
 
 /* ===== SIDEBAR ===== */
 function pickSidebar(el) {
+  sfx('tick');
   el.parentElement.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('sidebarMain').textContent = '> 顯示 ' + el.textContent.replace('▸ ','') + ' 的內容';
@@ -2858,6 +4068,7 @@ function pickSidebar(el) {
 
 /* ===== CAROUSEL ===== */
 function pickCarousel(idx) {
+  sfx('tick');
   const dots = document.querySelectorAll('.carousel-dot');
   dots.forEach(d => d.classList.remove('active'));
   dots[idx].classList.add('active');
@@ -2866,13 +4077,18 @@ function pickCarousel(idx) {
 
 /* ===== PROGRESS ===== */
 function runProgress() {
+  sfx('scan');
   const fill = document.getElementById('progressFill');
   const txt = document.getElementById('progressText');
   let v = 0;
   fill.style.width = '0%';
   const iv = setInterval(() => {
     v += Math.random() * 8 + 2;
-    if (v >= 100) { v = 100; clearInterval(iv); txt.textContent = '100% · COMPLETE'; }
+    if (v >= 100) {
+      v = 100; clearInterval(iv);
+      txt.textContent = '100% · COMPLETE';
+      sfx('coin');
+    }
     else { txt.textContent = Math.round(v) + '% · DOWNLOAD'; }
     fill.style.width = v + '%';
   }, 100);
@@ -2910,12 +4126,14 @@ function toggleLearn(btn, id) {
     term.classList.remove('learned');
     btn.classList.remove('is-learned');
     btn.textContent = '標為已學';
+    sfx('tick');
     showToast('已取消標記', 'info');
   } else {
     learned.push(id);
     term.classList.add('learned');
     btn.classList.add('is-learned');
     btn.textContent = '✓ 已學會';
+    sfx('coin');
     showToast('已標記為學會', 'success');
   }
   saveLearned(learned);
@@ -3137,6 +4355,7 @@ function termClearScreen() {
 function termRun(cmd) {
   cmd = (cmd || '').trim();
   if (!cmd) return;
+  sfx('jack-in');
   // remove last prompt line
   const body = document.getElementById('terminalBody');
   const lastChild = body.lastElementChild;
@@ -3196,6 +4415,7 @@ function termRun(cmd) {
 }
 
 function termFill(cmd) {
+  sfx('beep');
   const input = document.getElementById('termInput');
   input.value = cmd;
   input.focus();
@@ -3227,6 +4447,7 @@ function showJohnny(text) {
   if (!msg || !txt) return;
   txt.textContent = text;
   msg.classList.add('show');
+  sfx('relic');
   clearTimeout(window._johnnyTimer);
   window._johnnyTimer = setTimeout(() => msg.classList.remove('show'), 7000);
 }
@@ -3251,6 +4472,7 @@ function scheduleJohnny() {
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded', () => {
+  restoreSfx();
   restoreLearned();
   applyFilter();
   // 第一次延遲 10 秒跳出 Johnny 第一句
@@ -3260,6 +4482,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* fallback if DOMContentLoaded already fired */
 if (document.readyState !== 'loading') {
+  restoreSfx();
   restoreLearned();
   applyFilter();
 }
